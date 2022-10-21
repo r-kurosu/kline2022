@@ -1,7 +1,8 @@
-from re import M
 import pandas as pd
 import numpy as np
 import gurobipy as gp
+
+(#TODO: add gurobi path ?)
 
 # define constants----------------------------------------------
 df_car = pd.read_csv('sample_car_data.csv')
