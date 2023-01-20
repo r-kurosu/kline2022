@@ -56,15 +56,21 @@ def main():
     # 1.向きの対応
     # 2.高さ制限の対応
     # 3.元のグラフに閉路が存在する場合，さらに部分巡回路を排除する制約の追加が必要
+    model.params.LogToConsole = False #NOTE: これをTrueにすると，Gurobiの出力がコンソールに出力される
+    
     model.optimize()
 
+    # (ブロック: 車種)
     sol = {i: k for i,k in x if isinstance(x[i,k], gp.Var) and  x[i,k].x > 0.5}
-    print(sol)
+    # print(sol)
 
+    # 有向辺の集合 (LP)
     sola = {(i,k) for i,k in alpha if isinstance(alpha[i,k], gp.Var) and  alpha[i,k].x > 0.5}
-    print(sola)
+    # print(sola)
+    
+    # 有向辺の集合（DP）
     solb = {(i,k) for i,k in beta if isinstance(beta[i,k], gp.Var) and  beta[i,k].x > 0.5}
-    print(solb)
+    # print(solb)
     #print(o[m+1])
     
     return sol, sola, solb
