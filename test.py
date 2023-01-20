@@ -97,4 +97,7 @@ def main():
     
     return sol, sola, solb
 
-main()
+
+if __name__ == '__main__':
+    sol, sola, solb = main()
+    
