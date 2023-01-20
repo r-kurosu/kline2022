@@ -46,7 +46,7 @@ def output_dat_file(a,b,m,total_amount,LP_list, DP_list, num_edge, Edge_list):
     outfile.write(f'# m n\n')
     outfile.write(f'{m} {a*b-1}\n')
     outfile.write(f'# p\n')
-    outfile.write(f'{(str(total_amount//m) + " ")*m}\n')
+    outfile.write(f'{(str(total_amount//(m-1)) + " ")*(m-1)}\n')
     outfile.write(f'# o (last one for m+1)\n')
     outfile.write(f'{" ".join(LP_list)}\n')
     outfile.write(f'# d (last one for m+1)\n')
@@ -63,10 +63,10 @@ def output_dat_file(a,b,m,total_amount,LP_list, DP_list, num_edge, Edge_list):
 
 port_list = [1, 2, 3, 4, 5, 6, 7, 8, 9] # input port list
 def main():
-    a = 4 # input row of brock
-    b = 8 # input column of brock
-    m = 3 # input number of car
-    total_amount = 100 # input total amount of car
+    a = 5 # input row of brock
+    b = 5 # input column of brock
+    m = 4 # input number of car
+    total_amount = 120 # input total amount of car
     
     num_brock, num_edge, edge_list = generate_brock(a, b)
     car_info_list = generate_car(m, total_amount, port_list)
