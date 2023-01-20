@@ -13,7 +13,11 @@ def generate_brock(a, b):
     for i in range(a-1):
         for j in range(b):
             edge_list.append((i*b+j, i*b+j+b)) # NOTE: fix 1/20 12:30
-            
+    
+    #TODO: 上の階層へと繋がるブロックの指定
+    ramp_brock = 0
+    edge_list.append((ramp_brock, num_brock)) # 上の階層へのエッジ
+    
     return num_brock, num_edge, edge_list
 
 
@@ -35,8 +39,8 @@ def generate_car(m, total_amount, port_list):
 
 
 def output_dat_file(a,b,m,total_amount,LP_list, DP_list, num_edge, Edge_list):
-    LP_list.append(port_list[0])
-    DP_list.append(port_list[-1])
+    LP_list.append(port_list[0]-1)
+    DP_list.append(port_list[-1]+1)
     
     LP_list = [str(i) for i in LP_list]
     DP_list = [str(i) for i in DP_list]
@@ -46,15 +50,15 @@ def output_dat_file(a,b,m,total_amount,LP_list, DP_list, num_edge, Edge_list):
     outfile.write(f'# m n\n')
     outfile.write(f'{m} {a*b-1}\n')
     outfile.write(f'# p\n')
-    outfile.write(f'{(str(total_amount//(m-1)) + " ")*(m-1)}\n')
+    outfile.write(f'{(str(total_amount//(m)) + " ")*(m)}\n')
     outfile.write(f'# o (last one for m+1)\n')
     outfile.write(f'{" ".join(LP_list)}\n')
     outfile.write(f'# d (last one for m+1)\n')
     outfile.write(f'{" ".join(DP_list)}\n')
     outfile.write(f'# q\n')
-    outfile.write(f'{(str(total_amount//(a*b))+" ")*(a*b)}\n')
+    outfile.write(f'{(str(total_amount//(a*b-1))+" ")*(a*b)}\n')
     outfile.write(f'# E (first line is the size of E)\n')
-    outfile.write(f'{num_edge}\n')
+    outfile.write(f'{len(Edge_list)}\n')
     for edge in Edge_list:
         outfile.write(f'{edge[0]} {edge[1]}\n')
         
@@ -62,23 +66,24 @@ def output_dat_file(a,b,m,total_amount,LP_list, DP_list, num_edge, Edge_list):
 
 
 port_list = [1, 2, 3, 4, 5, 6, 7, 8, 9] # input port list
-def main():
-    a = 5 # input row of brock
-    b = 5 # input column of brock
+
+def main(a, b):
     m = 4 # input number of car
     total_amount = 120 # input total amount of car
     
     num_brock, num_edge, edge_list = generate_brock(a, b)
     car_info_list = generate_car(m, total_amount, port_list)
     
-    print(f"num_brock: {num_brock}")
-    print(f"num_edge: {num_edge}")
-    print(f"edge_list: {edge_list}")
-    print(f"car_info_list: {car_info_list}")
+    # print(f"num_brock: {num_brock}")
+    # print(f"num_edge: {num_edge}")
+    # print(f"edge_list: {edge_list}")
+    # print(f"car_info_list: {car_info_list}")
 
     output_dat_file(a,b,m,total_amount,[i[0] for i in car_info_list], [i[1] for i in car_info_list], num_edge, edge_list)
     
     return
 
-
-main()
+if __name__ == "__main__":
+    a = 5 # input row of brock
+    b = 6 # input column of brock
+    main(a, b)

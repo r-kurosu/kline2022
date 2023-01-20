@@ -20,24 +20,27 @@ center_alignment = Alignment(horizontal="centerContinuous", vertical="center" , 
 red_font = excel.styles.fonts.Font(color='FF0000')
 brue_font = excel.styles.fonts.Font(color='0000FF')
 
+
 def paint_cell(a, b, sol, ws):
     for i in range(a):
         for j in range(b):
             # print(f"{i*a+j}: {sol[i*a+j]}")
-            ws.cell(row=2*i+1, column=2*j+1).value = i*a+j
+            ws.cell(row=2*i+1, column=2*j+1).value = i*b+j
             ws.cell(row=2*i+1, column=2*j+1).border = block_border
             ws.cell(row=2*i+1, column=2*j+1).alignment = center_alignment
             
-            if sol[i*a+j] == 0:
+            if sol[i*b+j] == 0:
                 pass
-            elif sol[i*a+j] == 1:
+            elif sol[i*b+j] == 1:
                 ws.cell(row=2*i+1, column=2*j+1).fill = red_fill
-            elif sol[i*a+j] == 2:
+            elif sol[i*b+j] == 2:
                 ws.cell(row=2*i+1, column=2*j+1).fill = blue_fill
-            elif sol[i*a+j] == 3:
+            elif sol[i*b+j] == 3:
                 ws.cell(row=2*i+1, column=2*j+1).fill = green_fill
-            elif sol[i*a+j] == 4:
+            elif sol[i*b+j] == 4:
                 ws.cell(row=2*i+1, column=2*j+1).fill = yellow_fill
+            else:
+                pass
             
     return ws
 
@@ -46,20 +49,20 @@ def print_edge_in(a, b, sola, ws):
     for edge in sola:
         if edge[0] + 1 == edge[1]:
             # print(f"edge: {edge}")
-            ws.cell(row=2*(edge[0]//a)+1, column=2*(edge[0]%a)+2).value = "→\n"
-            ws.cell(row=2*(edge[0]//a)+1, column=2*(edge[0]%a)+2).alignment = center_alignment
+            ws.cell(row=2*(edge[0]//b)+1, column=2*(edge[0]%b)+2).value = "→\n"
+            ws.cell(row=2*(edge[0]//b)+1, column=2*(edge[0]%b)+2).alignment = center_alignment
         elif edge[0] - 1 == edge[1]:
             # print(f"edge: {edge}")
-            ws.cell(row=2*(edge[0]//a)+1, column=2*(edge[0]%a)).value = "←\n"
-            ws.cell(row=2*(edge[0]//a)+1, column=2*(edge[0]%a)).alignment = center_alignment
-        elif edge[0] + a == edge[1]:
+            ws.cell(row=2*(edge[0]//b)+1, column=2*(edge[0]%b)).value = "←\n"
+            ws.cell(row=2*(edge[0]//b)+1, column=2*(edge[0]%b)).alignment = center_alignment
+        elif edge[0] + b == edge[1]:
             # print(f"edge: {edge}")
-            ws.cell(row=2*(edge[0]//a)+2, column=2*(edge[0]%a)+1).value = "↓"
-            ws.cell(row=2*(edge[0]//a)+2, column=2*(edge[0]%a)+1).alignment = center_alignment
-        elif edge[0] - a == edge[1]:
+            ws.cell(row=2*(edge[0]//b)+2, column=2*(edge[0]%b)+1).value = "↓"
+            ws.cell(row=2*(edge[0]//b)+2, column=2*(edge[0]%b)+1).alignment = center_alignment
+        elif edge[0] - b == edge[1]:
             # print(f"edge: {edge}")
-            ws.cell(row=2*(edge[0]//a), column=2*(edge[0]%a)+1).value = "↑"
-            ws.cell(row=2*(edge[0]//a), column=2*(edge[0]%a)+1).alignment = center_alignment
+            ws.cell(row=2*(edge[0]//b), column=2*(edge[0]%b)+1).value = "↑"
+            ws.cell(row=2*(edge[0]//b), column=2*(edge[0]%b)+1).alignment = center_alignment
     return
 
 
@@ -67,30 +70,31 @@ def print_edge_out(a, b, solb, ws):
     for edge in solb:
         if edge[0] + 1 == edge[1]:
             # print(f"edge: {edge}")
-            cell_contents = ws.cell(row=2*(edge[0]//a)+1, column=2*(edge[0]%a)+2).value
-            ws.cell(row=2*(edge[0]//a)+1, column=2*(edge[0]%a)+2).value = (cell_contents or "") + "→"
-            ws.cell(row=2*(edge[0]//a)+1, column=2*(edge[0]%a)+2).alignment = center_alignment
+            cell_contents = ws.cell(row=2*(edge[0]//b)+1, column=2*(edge[0]%b)+2).value
+            ws.cell(row=2*(edge[0]//b)+1, column=2*(edge[0]%b)+2).value = (cell_contents or "") + "→"
+            ws.cell(row=2*(edge[0]//b)+1, column=2*(edge[0]%b)+2).alignment = center_alignment
         elif edge[0] - 1 == edge[1]:
             # print(f"edge: {edge}")
-            cell_contents = ws.cell(row=2*(edge[0]//a)+1, column=2*(edge[0]%a)).value
-            ws.cell(row=2*(edge[0]//a)+1, column=2*(edge[0]%a)).value = (cell_contents or "") + "←"
-            ws.cell(row=2*(edge[0]//a)+1, column=2*(edge[0]%a)).alignment = center_alignment
-        elif edge[0] + a == edge[1]:
+            cell_contents = ws.cell(row=2*(edge[0]//b)+1, column=2*(edge[0]%b)).value
+            ws.cell(row=2*(edge[0]//b)+1, column=2*(edge[0]%b)).value = (cell_contents or "") + "←"
+            ws.cell(row=2*(edge[0]//b)+1, column=2*(edge[0]%b)).alignment = center_alignment
+        elif edge[0] + b == edge[1]:
             # print(f"edge: {edge}")
-            cell_contents = ws.cell(row=2*(edge[0]//a)+2, column=2*(edge[0]%a)+1).value
-            ws.cell(row=2*(edge[0]//a)+2, column=2*(edge[0]%a)+1).value = (cell_contents or "") + "↓"
-            ws.cell(row=2*(edge[0]//a)+2, column=2*(edge[0]%a)+1).alignment = center_alignment
-        elif edge[0] - a == edge[1]:
+            cell_contents = ws.cell(row=2*(edge[0]//b)+2, column=2*(edge[0]%b)+1).value
+            ws.cell(row=2*(edge[0]//b)+2, column=2*(edge[0]%b)+1).value = (cell_contents or "") + "↓"
+            ws.cell(row=2*(edge[0]//b)+2, column=2*(edge[0]%b)+1).alignment = center_alignment
+        elif edge[0] - b == edge[1]:
             # print(f"edge: {edge}")
-            cell_contents = ws.cell(row=2*(edge[0]//a), column=2*(edge[0]%a)+1).value
-            ws.cell(row=2*(edge[0]//a), column=2*(edge[0]%a)+1).value = (cell_contents or "") + "↑"
-            ws.cell(row=2*(edge[0]//a), column=2*(edge[0]%a)+1).alignment = center_alignment
+            cell_contents = ws.cell(row=2*(edge[0]//b), column=2*(edge[0]%b)+1).value
+            ws.cell(row=2*(edge[0]//b), column=2*(edge[0]%b)+1).value = (cell_contents or "") + "↑"
+            ws.cell(row=2*(edge[0]//b), column=2*(edge[0]%b)+1).alignment = center_alignment
     
     return
 
 
 def add_annotation(ws, a, b, m):
     LP_list, DP_list = test.get_LP_DP_list()
+    print(LP_list, DP_list)
     
     ws.cell(row=1, column=2*b+1).value = f"car"
     ws.cell(row=1, column=2*b+1).alignment = center_alignment
@@ -114,10 +118,7 @@ def fit_cell_size(ws, a, b):
         ws.column_dimensions[get_column_letter(i+1)].width = 8
     
 
-def main_test():
-    a = 5 # number of row of block
-    b = 5 # number of column of block
-    
+def for_test(a,b):
     sol, sola, solb = test.main()
     sol[0] = 0 # 0 is not used
     
@@ -136,10 +137,7 @@ def main_test():
     return
 
 
-def main_flow():
-    a = 5 # number of row of block
-    b = 5 # number of column of block
-    
+def for_flow(a,b):
     sol, sola, solb = flow.main()
     sol[0] = 0 # 0 is not used
     
@@ -158,7 +156,15 @@ def main_flow():
     return
 
 
+def main(a,b):
+    for_flow(a,b)
+    for_test(a,b)
+    
+    return
+
+
 if __name__ == "__main__":
-    main_flow()
-    main_test()
+    a = 5 # input row of brock
+    b = 5 # input column of brock
+    main(a,b)
 
