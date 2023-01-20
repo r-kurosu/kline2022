@@ -1,5 +1,27 @@
 import gurobipy as gp
 
+def get_LP_DP_list():
+    with open("small.dat", 'r') as f:
+        lines = [line.rstrip() for line in f.readlines()]
+    lines = [line for line in lines if line[0] != '#']
+    items = lines.pop(0).split(' ')
+    m, n = int(items[0]),  int(items[1])
+    M = {i for i in range(1,m+1)}
+    M_p = {i for i in range(1,m+2)}
+    V = {i for i in range(1,n+1)}
+    V_p = {i for i in range(0,n+2)}
+    items = lines.pop(0).split(' ')
+    p = {i+1: int(v) for i, v in enumerate(items)}
+    items = lines.pop(0).split(' ')
+    o = {i+1: int(v) for i, v in enumerate(items)}
+    items = lines.pop(0).split(' ')
+    d = {i+1: int(v) for i, v in enumerate(items)}
+    items = lines.pop(0).split(' ')
+    
+    # print(f"o: {o}")
+    # print(f"d: {d}")
+        
+    return o, d
 
 def main():
     with open("small.dat", 'r') as f:
