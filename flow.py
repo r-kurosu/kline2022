@@ -79,6 +79,7 @@ def main():
     model.update()
     model.write("a.lp")
 
+    model.params.LogToConsole = False #NOTE: これをTrueにすると，Gurobiの出力がコンソールに出力される
     model.optimize()
     model.write("solution.sol")
 

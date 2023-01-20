@@ -2,7 +2,7 @@ import openpyxl as excel
 from openpyxl.styles.borders import Border, Side
 from openpyxl.styles import Alignment
 from openpyxl.utils import get_column_letter
-import test
+import test, flow
 
 # color setting
 red_fill = excel.styles.PatternFill(patternType='solid', fgColor='FF0000')
@@ -112,15 +112,15 @@ def fit_cell_size(ws, a, b):
         ws.column_dimensions[get_column_letter(i+1)].width = 8
     
 
-def main():
+def main_test():
     a = 5 # number of row of block
     b = 5 # number of column of block
+    
     sol, sola, solb = test.main()
     sol[0] = 0 # 0 is not used
     
     wb = excel.Workbook()
-    wb.save("results_sample.xlsx")
-    
+    wb.save("results_tree.xlsx")
     ws = wb.active
     
     ws = paint_cell(a, b, sol, ws)
@@ -129,8 +129,34 @@ def main():
     add_annotation(ws, a, b, 4)
     fit_cell_size(ws, a, b)
     
-    wb.save("results_sample.xlsx")
+    wb.save("results_tree.xlsx")
     
     return
 
-main()
+
+def main_flow():
+    a = 5 # number of row of block
+    b = 5 # number of column of block
+    
+    sol, sola, solb = flow.main()
+    sol[0] = 0 # 0 is not used
+    
+    wb = excel.Workbook()
+    wb.save("results_flow.xlsx")
+    ws = wb.active
+    
+    ws = paint_cell(a, b, sol, ws)
+    print_edge_in(a, b, sola, ws)
+    print_edge_out(a, b, solb, ws)
+    add_annotation(ws, a, b, 4)
+    fit_cell_size(ws, a, b)
+    
+    wb.save("results_flow.xlsx")
+    
+    return
+
+
+if __name__ == "__main__":
+    main_flow()
+    main_test()
+
