@@ -24,8 +24,8 @@ def get_LP_DP_list():
     return o, d
 
 def main():
-    # with open("sample_data.dat", 'r') as f:
-    with open("small.dat", 'r') as f:
+    with open("sample_data.dat", 'r') as f:
+    # with open("small.dat", 'r') as f:
         lines = [line.rstrip() for line in f.readlines()]
     lines = [line for line in lines if line[0] != '#']
     items = lines.pop(0).split(' ')

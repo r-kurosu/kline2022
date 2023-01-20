@@ -2,7 +2,8 @@ import gurobipy as gp
 
 
 def main():
-    with open("small.dat", 'r') as f:
+    with open("sample_data.dat", 'r') as f:
+    # with open("small.dat", 'r') as f:
         lines = [line.rstrip() for line in f.readlines()]
     lines = [line for line in lines if line[0] != '#']
     items = lines.pop(0).split(' ')
@@ -81,7 +82,8 @@ def main():
 
     model.params.LogToConsole = False #NOTE: これをTrueにすると，Gurobiの出力がコンソールに出力される
     model.optimize()
-    model.write("solution.sol")
+    # print("Optimal status:", model.status)
+    # model.write("solution.sol")
 
     #if model.status == gp.GRB.OPTIMAL:
     #    model.printAttr('x')
@@ -92,13 +94,13 @@ def main():
 
 
     sol = {i: k for i,k in x if isinstance(x[i,k], gp.Var) and  x[i,k].X > 0.5}
-    # print(sol)
+    print(sol)
 
     sola = {(i,k) for i,k in alpha if isinstance(alpha[i,k], gp.Var) and  alpha[i,k].X > 0.5}
-    # print(sola)
+    print(sola)
     
     solb = {(i,k) for i,k in beta if isinstance(beta[i,k], gp.Var) and  beta[i,k].X > 0.5}
-    # print(solb)
+    print(solb)
     
     return sol, sola, solb
 
