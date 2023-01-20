@@ -17,6 +17,8 @@ block_border = Border(top=Side(style='thin', color='000000'),
                 right=Side(style='thin', color='000000'))
 
 center_alignment = Alignment(horizontal="centerContinuous", vertical="center" , wrap_text=True)
+red_font = excel.styles.fonts.Font(color='FF0000')
+brue_font = excel.styles.fonts.Font(color='0000FF')
 
 def paint_cell(a, b, sol, ws):
     for i in range(a):

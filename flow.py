@@ -91,13 +91,13 @@ def main():
         #model.write("model_iis.ilp")
 
 
-    sol = {i: k for i,k in x if isinstance(x[i,k], gp.Var) and  x[i,k].x > 0.5}
+    sol = {i: k for i,k in x if isinstance(x[i,k], gp.Var) and  x[i,k].X > 0.5}
     # print(sol)
 
-    sola = {(i,k) for i,k in alpha if isinstance(alpha[i,k], gp.Var) and  alpha[i,k].x > 0.5}
+    sola = {(i,k) for i,k in alpha if isinstance(alpha[i,k], gp.Var) and  alpha[i,k].X > 0.5}
     # print(sola)
     
-    solb = {(i,k) for i,k in beta if isinstance(beta[i,k], gp.Var) and  beta[i,k].x > 0.5}
+    solb = {(i,k) for i,k in beta if isinstance(beta[i,k], gp.Var) and  beta[i,k].X > 0.5}
     # print(solb)
     
     return sol, sola, solb

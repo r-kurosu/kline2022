@@ -24,6 +24,7 @@ def get_LP_DP_list():
     return o, d
 
 def main():
+    # with open("sample_data.dat", 'r') as f:
     with open("small.dat", 'r') as f:
         lines = [line.rstrip() for line in f.readlines()]
     lines = [line for line in lines if line[0] != '#']
@@ -83,15 +84,15 @@ def main():
     model.optimize()
 
     # (ブロック: 車種)
-    sol = {i: k for i,k in x if isinstance(x[i,k], gp.Var) and  x[i,k].x > 0.5}
+    sol = {i: k for i,k in x if isinstance(x[i,k], gp.Var) and  x[i,k].X > 0.5}
     # print(sol)
 
     # 有向辺の集合 (LP)
-    sola = {(i,k) for i,k in alpha if isinstance(alpha[i,k], gp.Var) and  alpha[i,k].x > 0.5}
+    sola = {(i,k) for i,k in alpha if isinstance(alpha[i,k], gp.Var) and  alpha[i,k].X > 0.5}
     # print(sola)
     
     # 有向辺の集合（DP）
-    solb = {(i,k) for i,k in beta if isinstance(beta[i,k], gp.Var) and  beta[i,k].x > 0.5}
+    solb = {(i,k) for i,k in beta if isinstance(beta[i,k], gp.Var) and  beta[i,k].X > 0.5}
     # print(solb)
     #print(o[m+1])
     
