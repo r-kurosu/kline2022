@@ -56,7 +56,7 @@ def print_edge_in(a, b, sola, ws):
             ws.cell(row=2*(edge[0]//b)+1, column=2*(edge[0]%b)).value = "←\n"
             ws.cell(row=2*(edge[0]//b)+1, column=2*(edge[0]%b)).alignment = center_alignment
         elif edge[0] + b == edge[1]:
-            # print(f"edge: {edge}")
+            print(f"edge: {edge}")
             ws.cell(row=2*(edge[0]//b)+2, column=2*(edge[0]%b)+1).value = "↓"
             ws.cell(row=2*(edge[0]//b)+2, column=2*(edge[0]%b)+1).alignment = center_alignment
         elif edge[0] - b == edge[1]:
@@ -94,7 +94,6 @@ def print_edge_out(a, b, solb, ws):
 
 def add_annotation(ws, a, b, m):
     LP_list, DP_list = test.get_LP_DP_list()
-    print(LP_list, DP_list)
     
     ws.cell(row=1, column=2*b+1).value = f"car"
     ws.cell(row=1, column=2*b+1).alignment = center_alignment
@@ -152,6 +151,10 @@ def for_flow(a,b):
     fit_cell_size(ws, a, b)
     
     wb.save("results_flow.xlsx")
+    
+    # print(len(sola), len(solb))
+    # print(sola)
+    # print(solb)
     
     return
 
