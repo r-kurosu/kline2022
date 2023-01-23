@@ -1,5 +1,7 @@
 import gurobipy as gp
 import sys
+import auto_excution
+import generate_sample
 
 
 def main():
@@ -11,7 +13,7 @@ def main():
     m, n = int(items[0]),  int(items[1])
     M = {i for i in range(1,m+1)}
     M_p = {i for i in range(1,m+2)}
-    V = {i for i in range(1,n+1)}
+    V = {i for i in range(0,n+1)} # NOTE: 1/23 fixed by Kurosu
     V_p = {i for i in range(0,n+2)}
     items = lines.pop(0).split(' ')
     p = {i+1: int(v) for i, v in enumerate(items)}
@@ -20,7 +22,7 @@ def main():
     items = lines.pop(0).split(' ')
     d = {i+1: int(v) for i, v in enumerate(items)}
     items = lines.pop(0).split(' ')
-    q = {i+1: int(v) for i, v in enumerate(items)}
+    q = {i: int(v) for i, v in enumerate(items)} # NOTE: 1/23 fixed by Kurosu
     q[n+1] = 1
     n_E =  int(lines.pop(0))
     E, E_b = set(), set()
@@ -32,7 +34,12 @@ def main():
     q_sum = sum(q.values())
     d_max, o_max = max(d), max(o)
 
+    # TODO: ランプブロックの取得
+    a, b = auto_excution.a, auto_excution.b
+    ramp_block = generate_sample.get_ramp_brock(a, b)
+    
     model = gp.Model('assignment')
+    # print(f"V={V}, M={M}, p={p}, q={q}")
     x = {(i,k): model.addVar(vtype = gp.GRB.BINARY, name = "x[{},{}]".format(i,k)) for i in V for k in M}
     x.update({(n+1,k): 0 for k in M})
     x.update({(i,m+1): 0 for i in V})
@@ -45,14 +52,14 @@ def main():
 
 
     # 制約関数
-    model.addConstrs((gp.quicksum(q[i] * x[i,k] for i in V) >= p[k] for k in M), name="(34)")
-    model.addConstrs((gp.quicksum(x[i,k] for k in M) == 1 for i in V), name="(35)")
+    model.addConstrs((gp.quicksum(q[i] * x[i,k] for i in V-{ramp_block}) >= p[k] for k in M), name="(34)")
+    model.addConstrs((gp.quicksum(x[i,k] for k in M) == 1 for i in V-{ramp_block}), name="(35)")
     model.addConstrs((gp.quicksum(o[k] * x[j,k] for k in M_p) <= gp.quicksum(o[k] * x[i,k] for k in M_p) + o_max * (1-alpha[i,j]) 
-                                    for (i,j) in E if i != 0), name="(36)")
+                                    for (i,j) in E if i != ramp_block), name="(36)")
     model.addConstrs((gp.quicksum(d[k] * x[j,k] for k in M_p) <= gp.quicksum(d[k] * x[i,k] for k in M_p) + d_max * (1-beta[i,j])
-                                    for (i,j) in E_b if j != 0), name="(37)")
-    model.addConstrs((gp.quicksum(alpha[j,i] for j in V_p if (j,i) in E) == 1 for i in V | {n+1}), name="(38a)")
-    model.addConstrs((gp.quicksum(beta[i,j] for j in V_p if (i,j) in E_b) == 1 for i in V | {n+1}), name="(38b)")
+                                    for (i,j) in E_b if j != ramp_block), name="(37)")
+    model.addConstrs((gp.quicksum(alpha[j,i] for j in V_p if (j,i) in E) == 1 for i in V-{ramp_block} | {n+1}), name="(38a)")
+    model.addConstrs((gp.quicksum(beta[i,j] for j in V_p if (i,j) in E_b) == 1 for i in V^{ramp_block} | {n+1}), name="(38b)")
 
     # TBD
     # 1.向きの対応
@@ -63,9 +70,11 @@ def main():
     model.optimize()
 
     if model.status == gp.GRB.OPTIMAL:
+        print("Tree model is solved!!!")
+        
         # (ブロック: 車種)
         sol = {i: k for i,k in x if isinstance(x[i,k], gp.Var) and  x[i,k].X > 0.5}
-        print(sol)
+        print("sol = ", sol)
 
         # 有向辺の集合 (LP)
         sola = {(i,k) for i,k in alpha if isinstance(alpha[i,k], gp.Var) and  alpha[i,k].X > 0.5}
@@ -76,7 +85,7 @@ def main():
         # print(solb)
         #print(o[m+1])
     else:
-        print("Model is not solved")
+        print("Tree model is infeasible")
         return None, None, None
         
     return sol, sola, solb

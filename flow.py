@@ -1,5 +1,7 @@
 import gurobipy as gp
 import sys
+import auto_excution
+import generate_sample
 
 
 def main():
@@ -11,7 +13,7 @@ def main():
     m, n = int(items[0]),  int(items[1])
     M = {i for i in range(1,m+1)}
     M_p = {i for i in range(1,m+2)}
-    V = {i for i in range(1,n+1)}
+    V = {i for i in range(n+1)}
     V_p = {i for i in range(0,n+2)}
     items = lines.pop(0).split(' ')
     p = {i+1: int(v) for i, v in enumerate(items)}
@@ -21,7 +23,7 @@ def main():
     items = lines.pop(0).split(' ')
     d = {i+1: int(v) for i, v in enumerate(items)}
     items = lines.pop(0).split(' ')
-    q = {i+1: int(v) for i, v in enumerate(items)}
+    q = {i: int(v) for i, v in enumerate(items)}
     q[n+1] = 1
     n_E =  int(lines.pop(0))
     E, E_b = set(), set()
@@ -33,6 +35,10 @@ def main():
     q_sum = sum(q.values())
     d_max, o_max = max(d), max(o)
 
+    # TODO: ランプブロックの取得
+    a,b = auto_excution.a, auto_excution.b
+    ramp_block = generate_sample.get_ramp_brock(a,b)
+    
     model = gp.Model('assignment')
     x = {(i,k): model.addVar(vtype = gp.GRB.BINARY, name = "x[{},{}]".format(i,k)) for i in V for k in M}
     x.update({(n+1,k): 0 for k in M})
@@ -49,25 +55,25 @@ def main():
 
 
     # 制約関数
-    model.addConstrs((gp.quicksum(q[i] * x[i,k] for i in V) >= p[k] for k in M), name="(18)")
-    model.addConstrs((gp.quicksum(x[i,k] for k in M) == 1 for i in V), name="(19)")
+    model.addConstrs((gp.quicksum(q[i] * x[i,k] for i in V-{ramp_block}) >= p[k] for k in M), name="(18)")
+    model.addConstrs((gp.quicksum(x[i,k] for k in M) == 1 for i in V-{ramp_block}), name="(19)")
     model.addConstrs((gp.quicksum(o[k] * x[j,k] for k in M_p) <= gp.quicksum(o[k] * x[i,k] for k in M_p) + o_max * (1-alpha[i,j]) 
-                                    for (i,j) in E if i != 0), name="(20)")
+                                    for (i,j) in E if i != ramp_block), name="(20)")
     model.addConstrs((gp.quicksum(d[k] * x[j,k] for k in M_p) <= gp.quicksum(d[k] * x[i,k] for k in M_p) + d_max * (1-beta[i,j])
-                                    for (i,j) in E_b if j != 0), name="(21)")
+                                    for (i,j) in E_b if j != ramp_block), name="(21)")
 
     model.addConstrs((gp.quicksum(u[j,i] for j in V_p if (j,i) in E) - gp.quicksum(u[i,j] for j in V_p if (i,j) in E) == gp.quicksum(q[i] * x[i,k] for k in M_p)
-                                    for i in V | {n+1}), name = "(22)")
-    model.addConstr((gp.quicksum(u[0,j] for j in V_p if (0,j) in E) == gp.quicksum(p[k] for k in M_p)), name = "(23)") 
+                                    for i in V-{ramp_block} | {n+1}), name = "(22)")
+    model.addConstr((gp.quicksum(u[ramp_block,j] for j in V_p if (ramp_block,j) in E) == gp.quicksum(p[k] for k in M_p)), name = "(23)") 
     model.addConstrs((gp.quicksum(v[i,j] for j in V_p if (i,j) in E_b) - gp.quicksum(v[j,i] for j in V_p if (j,i) in E_b) == gp.quicksum(q[i] * x[i,k]for k in M_p)
-                                    for i in V | {n+1}), name = "(24)")
-    model.addConstr((gp.quicksum(v[i,0] for i in V_p if (i,0) in E_b) == gp.quicksum(p[k] for k in M_p)), name = "(25)")
+                                    for i in V-{ramp_block} | {n+1}), name = "(24)")
+    model.addConstr((gp.quicksum(v[i,ramp_block] for i in V_p if (i,ramp_block) in E_b) == gp.quicksum(p[k] for k in M_p)), name = "(25)")
 
     model.addConstrs((u[j,i] <= q_sum * alpha[j,i] for (j,i) in E), name = "(26b)")
 
     model.addConstrs((v[i,j] <= q_sum * beta[i,j] for (i,j) in E_b), name = "(27b)")
-    model.addConstrs((gp.quicksum(alpha[j,i] for j in V_p if (j,i) in E) == 1 for i in V | {n+1}), name="(28a)")
-    model.addConstrs((gp.quicksum(beta[i,j] for j in V_p if (i,j) in E_b) == 1 for i in V | {n+1}), name="(28b)")
+    model.addConstrs((gp.quicksum(alpha[j,i] for j in V_p if (j,i) in E) == 1 for i in V-{ramp_block} | {n+1}), name="(28a)")
+    model.addConstrs((gp.quicksum(beta[i,j] for j in V_p if (i,j) in E_b) == 1 for i in V-{ramp_block} | {n+1}), name="(28b)")
 
 
 
@@ -81,7 +87,7 @@ def main():
     model.update()
     model.write("a.lp")
 
-    # model.params.LogToConsole = False #NOTE: これをTrueにすると，Gurobiの出力がコンソールに出力される
+    model.params.LogToConsole = False #NOTE: これをTrueにすると，Gurobiの出力がコンソールに出力される
     model.optimize()
     # print("Optimal status:", model.status)
     # model.write("solution.sol")
@@ -94,6 +100,7 @@ def main():
         #model.write("model_iis.ilp")
 
     if model.status == gp.GRB.OPTIMAL:
+        print("Flow model is solved!!!")
         sol = {i: k for i,k in x if isinstance(x[i,k], gp.Var) and  x[i,k].X > 0.5}
         print("sol =", sol)
 
@@ -106,7 +113,7 @@ def main():
         return sol, sola, solb
     
     else:
-        print("Model is infeasible")
+        print("Flow model is infeasible")
         return None, None, None
 
 
