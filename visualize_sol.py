@@ -160,10 +160,29 @@ def for_flow(a,b):
     
     return
 
-
+    
 def main(a,b):
     for_flow(a,b)
     for_test(a,b)
+    
+    return
+
+
+def visualize_solution(sol, sola, solb, a, b, model_name: str):
+    sol[0] = 0 # 0 is not used
+    
+    wb = excel.Workbook()
+    wb.save("results_flow.xlsx")
+    ws = wb.active
+    
+    ws = paint_cell(a, b, sol, ws)
+    print_edge_in(a, b, sola, ws)
+    print_edge_out(a, b, solb, ws)
+    
+    add_annotation(ws, a, b, 4)
+    fit_cell_size(ws, a, b)
+    
+    wb.save(f"results_{model_name}.xlsx")
     
     return
 
