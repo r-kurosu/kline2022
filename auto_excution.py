@@ -7,7 +7,7 @@ import flow
 def main():
     a = 5 # input row of brock
     b = 5 # input column of brock
-    m = 3 # input number of car
+    m = 4 # input number of car
     total_amount = 120 # input total amount of car
     
     # 1. generate sample data
@@ -15,11 +15,13 @@ def main():
     
     # 2a. solve the problem flow and get the solution
     sol, sola,solb = flow.main()
-    visualize_sol.visualize_solution(sol, sola, solb, a, b, "flow")
+    if sol is not None:
+        visualize_sol.visualize_solution(sol, sola, solb, a, b, "flow")
     
     # 2b. solve the problem tree and get the solution
     sol, sola,solb = test.main()
-    visualize_sol.visualize_solution(sol, sola, solb, a, b, "tree")
+    if sol is not None:
+        visualize_sol.visualize_solution(sol, sola, solb, a, b, "tree")
     
     
     return

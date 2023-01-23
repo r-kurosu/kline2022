@@ -1,9 +1,10 @@
 import gurobipy as gp
+import sys
 
 
 def main():
-    # with open("sample_data.dat", 'r') as f:
-    with open("small.dat", 'r') as f:
+    with open("sample_data.dat", 'r') as f:
+    # with open("small.dat", 'r') as f:
         lines = [line.rstrip() for line in f.readlines()]
     lines = [line for line in lines if line[0] != '#']
     items = lines.pop(0).split(' ')
@@ -80,7 +81,7 @@ def main():
     model.update()
     model.write("a.lp")
 
-    model.params.LogToConsole = False #NOTE: これをTrueにすると，Gurobiの出力がコンソールに出力される
+    # model.params.LogToConsole = False #NOTE: これをTrueにすると，Gurobiの出力がコンソールに出力される
     model.optimize()
     # print("Optimal status:", model.status)
     # model.write("solution.sol")
@@ -92,17 +93,22 @@ def main():
         #model.computeIIS()
         #model.write("model_iis.ilp")
 
+    if model.status == gp.GRB.OPTIMAL:
+        sol = {i: k for i,k in x if isinstance(x[i,k], gp.Var) and  x[i,k].X > 0.5}
+        print("sol =", sol)
 
-    sol = {i: k for i,k in x if isinstance(x[i,k], gp.Var) and  x[i,k].X > 0.5}
-    print("sol =", sol)
+        sola = {(i,k) for i,k in alpha if isinstance(alpha[i,k], gp.Var) and  alpha[i,k].X > 0.5}
+        print("sol a =", sola)
+        
+        solb = {(i,k) for i,k in beta if isinstance(beta[i,k], gp.Var) and  beta[i,k].X > 0.5}
+        print("sol b =", solb)
+        
+        return sol, sola, solb
+    
+    else:
+        print("Model is infeasible")
+        return None, None, None
 
-    sola = {(i,k) for i,k in alpha if isinstance(alpha[i,k], gp.Var) and  alpha[i,k].X > 0.5}
-    print("sol a =", sola)
-    
-    solb = {(i,k) for i,k in beta if isinstance(beta[i,k], gp.Var) and  beta[i,k].X > 0.5}
-    print("sol b =", solb)
-    
-    return sol, sola, solb
 
 if __name__ == '__main__':
     main()

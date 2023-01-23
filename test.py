@@ -1,31 +1,10 @@
 import gurobipy as gp
+import sys
 
-def get_LP_DP_list():
-    with open("small.dat", 'r') as f:
-        lines = [line.rstrip() for line in f.readlines()]
-    lines = [line for line in lines if line[0] != '#']
-    items = lines.pop(0).split(' ')
-    m, n = int(items[0]),  int(items[1])
-    M = {i for i in range(1,m+1)}
-    M_p = {i for i in range(1,m+2)}
-    V = {i for i in range(1,n+1)}
-    V_p = {i for i in range(0,n+2)}
-    items = lines.pop(0).split(' ')
-    p = {i+1: int(v) for i, v in enumerate(items)}
-    items = lines.pop(0).split(' ')
-    o = {i+1: int(v) for i, v in enumerate(items)}
-    items = lines.pop(0).split(' ')
-    d = {i+1: int(v) for i, v in enumerate(items)}
-    items = lines.pop(0).split(' ')
-    
-    # print(f"o: {o}")
-    # print(f"d: {d}")
-        
-    return o, d
 
 def main():
-    # with open("sample_data.dat", 'r') as f:
-    with open("small.dat", 'r') as f:
+    with open("sample_data.dat", 'r') as f:
+    # with open("small.dat", 'r') as f:
         lines = [line.rstrip() for line in f.readlines()]
     lines = [line for line in lines if line[0] != '#']
     items = lines.pop(0).split(' ')
@@ -83,19 +62,23 @@ def main():
     
     model.optimize()
 
-    # (ブロック: 車種)
-    sol = {i: k for i,k in x if isinstance(x[i,k], gp.Var) and  x[i,k].X > 0.5}
-    # print(sol)
+    if model.status == gp.GRB.OPTIMAL:
+        # (ブロック: 車種)
+        sol = {i: k for i,k in x if isinstance(x[i,k], gp.Var) and  x[i,k].X > 0.5}
+        print(sol)
 
-    # 有向辺の集合 (LP)
-    sola = {(i,k) for i,k in alpha if isinstance(alpha[i,k], gp.Var) and  alpha[i,k].X > 0.5}
-    # print(sola)
-    
-    # 有向辺の集合（DP）
-    solb = {(i,k) for i,k in beta if isinstance(beta[i,k], gp.Var) and  beta[i,k].X > 0.5}
-    # print(solb)
-    #print(o[m+1])
-    
+        # 有向辺の集合 (LP)
+        sola = {(i,k) for i,k in alpha if isinstance(alpha[i,k], gp.Var) and  alpha[i,k].X > 0.5}
+        # print(sola)
+        
+        # 有向辺の集合（DP）
+        solb = {(i,k) for i,k in beta if isinstance(beta[i,k], gp.Var) and  beta[i,k].X > 0.5}
+        # print(solb)
+        #print(o[m+1])
+    else:
+        print("Model is not solved")
+        return None, None, None
+        
     return sol, sola, solb
 
 

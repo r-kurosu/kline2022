@@ -9,7 +9,10 @@ red_fill = excel.styles.PatternFill(patternType='solid', fgColor='FF0000')
 blue_fill = excel.styles.PatternFill(patternType='solid', fgColor='0000FF')
 green_fill = excel.styles.PatternFill(patternType='solid', fgColor='00FF00')
 yellow_fill = excel.styles.PatternFill(patternType='solid', fgColor='FFFF00')
-color_list = [red_fill, blue_fill, green_fill, yellow_fill]
+pink_fill = excel.styles.PatternFill(patternType='solid', fgColor='FFC0CB')
+skyblue_fill = excel.styles.PatternFill(patternType='solid', fgColor='87CEEB')
+
+color_list = [red_fill, blue_fill, green_fill, yellow_fill, pink_fill, skyblue_fill]
 
 block_border = Border(top=Side(style='thin', color='000000'), 
                 bottom=Side(style='thin', color='000000'), 
@@ -92,8 +95,33 @@ def print_edge_out(a, b, solb, ws):
     return
 
 
+def get_LP_DP_list():
+    with open("sample_data.dat", 'r') as f:
+    # with open("small.dat", 'r') as f:
+        lines = [line.rstrip() for line in f.readlines()]
+    lines = [line for line in lines if line[0] != '#']
+    items = lines.pop(0).split(' ')
+    m, n = int(items[0]),  int(items[1])
+    M = {i for i in range(1,m+1)}
+    M_p = {i for i in range(1,m+2)}
+    V = {i for i in range(1,n+1)}
+    V_p = {i for i in range(0,n+2)}
+    items = lines.pop(0).split(' ')
+    p = {i+1: int(v) for i, v in enumerate(items)}
+    items = lines.pop(0).split(' ')
+    o = {i+1: int(v) for i, v in enumerate(items)}
+    items = lines.pop(0).split(' ')
+    d = {i+1: int(v) for i, v in enumerate(items)}
+    items = lines.pop(0).split(' ')
+    
+    # print(f"o: {o}")
+    # print(f"d: {d}")
+        
+    return o, d
+
+
 def add_annotation(ws, a, b, m):
-    LP_list, DP_list = test.get_LP_DP_list()
+    LP_list, DP_list = get_LP_DP_list()
     
     ws.cell(row=1, column=2*b+1).value = f"car"
     ws.cell(row=1, column=2*b+1).alignment = center_alignment
@@ -117,55 +145,55 @@ def fit_cell_size(ws, a, b):
         ws.column_dimensions[get_column_letter(i+1)].width = 8
     
 
-def for_test(a,b):
-    sol, sola, solb = test.main()
-    sol[0] = 0 # 0 is not used
+# def for_test(a,b):
+#     sol, sola, solb = test.main()
+#     sol[0] = 0 # 0 is not used
     
-    wb = excel.Workbook()
-    wb.save("results_tree.xlsx")
-    ws = wb.active
+#     wb = excel.Workbook()
+#     wb.save("results_tree.xlsx")
+#     ws = wb.active
     
-    ws = paint_cell(a, b, sol, ws)
-    print_edge_in(a, b, sola, ws)
-    print_edge_out(a, b, solb, ws)
+#     ws = paint_cell(a, b, sol, ws)
+#     print_edge_in(a, b, sola, ws)
+#     print_edge_out(a, b, solb, ws)
     
-    add_annotation(ws, a, b, 4)
-    fit_cell_size(ws, a, b)
+#     add_annotation(ws, a, b, 4)
+#     fit_cell_size(ws, a, b)
     
-    wb.save("results_tree.xlsx")
+#     wb.save("results_tree.xlsx")
     
-    return
+#     return
 
 
-def for_flow(a,b):
-    sol, sola, solb = flow.main()
-    sol[0] = 0 # 0 is not used
+# def for_flow(a,b):
+#     sol, sola, solb = flow.main()
+#     sol[0] = 0 # 0 is not used
     
-    wb = excel.Workbook()
-    wb.save("results_flow.xlsx")
-    ws = wb.active
+#     wb = excel.Workbook()
+#     wb.save("results_flow.xlsx")
+#     ws = wb.active
     
-    ws = paint_cell(a, b, sol, ws)
-    print_edge_in(a, b, sola, ws)
-    print_edge_out(a, b, solb, ws)
+#     ws = paint_cell(a, b, sol, ws)
+#     print_edge_in(a, b, sola, ws)
+#     print_edge_out(a, b, solb, ws)
     
-    add_annotation(ws, a, b, 4)
-    fit_cell_size(ws, a, b)
+#     add_annotation(ws, a, b, 4)
+#     fit_cell_size(ws, a, b)
     
-    wb.save("results_flow.xlsx")
+#     wb.save("results_flow.xlsx")
     
-    # print(len(sola), len(solb))
-    # print(sola)
-    # print(solb)
+#     # print(len(sola), len(solb))
+#     # print(sola)
+#     # print(solb)
     
-    return
+#     return
 
     
-def main(a,b):
-    for_flow(a,b)
-    for_test(a,b)
+# def main(a,b):
+#     for_flow(a,b)
+#     for_test(a,b)
     
-    return
+#     return
 
 
 def visualize_solution(sol, sola, solb, a, b, model_name: str):
@@ -190,5 +218,5 @@ def visualize_solution(sol, sola, solb, a, b, model_name: str):
 if __name__ == "__main__":
     a = 5 # input row of brock
     b = 5 # input column of brock
-    main(a,b)
+    # main(a,b)
 

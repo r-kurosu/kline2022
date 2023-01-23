@@ -66,7 +66,7 @@ def output_dat_file(a,b,m,total_amount,block_capacity,LP_list, DP_list, num_edge
     outfile.write(f'# d (last one for m+1)\n')
     outfile.write(f'{" ".join(DP_list)}\n')
     outfile.write(f'# q\n')
-    outfile.write(f'{str(block_capacity)}\n')
+    outfile.write(f'{(str(block_capacity) + " ")*(a*b)}\n')
     outfile.write(f'# E (first line is the size of E)\n')
     outfile.write(f'{len(Edge_list)}\n')
     for edge in Edge_list:
