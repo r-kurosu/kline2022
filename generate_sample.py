@@ -12,11 +12,15 @@ def get_ramp_brock(a, b):
 def generate_block(a, b):
     num_block = a*b - 1
     num_edge = a*(b-1) + b*(a-1) + 1
+    ramp_block = get_ramp_brock(a, b)
     
     edge_list = []
     for i in range(a):
         for j in range(b-1):
-            edge_list.append((i*b+j, i*b+j+1)) # NOTE: fix 1/20 12:30
+            if i*b+j >= ramp_block:
+                edge_list.append((i*b+j, i*b+j+1)) # NOTE: fix 1/20 12:30
+            else:
+                edge_list.append((i*b+j+1, i*b+j))
     
     for i in range(a-1):
         for j in range(b):
@@ -24,9 +28,7 @@ def generate_block(a, b):
     
     
     # 上の階層へと繋がるブロックを指定し、ダミーのエッジを追加
-    ramp_brock = get_ramp_brock(a, b)
-    edge_list.append((ramp_brock, num_block)) # 上の階層へのエッジ
-    # TODO: ここで, ランプブロックへの枝を減らす
+    edge_list.append((ramp_block, num_block+1)) # 上の階層へのエッジ
     
     return num_block, num_edge, edge_list
 
@@ -55,6 +57,10 @@ def output_dat_file(a,b,m,total_amount,block_capacity,LP_list, DP_list, num_edge
     LP_list = [str(i) for i in LP_list]
     DP_list = [str(i) for i in DP_list]
     
+    block_capacity_list = [block_capacity]*(a*b)
+    ramp_block = get_ramp_brock(a, b)
+    block_capacity_list[ramp_block] = 0
+    
     outfile = open('sample_data.dat', 'w')
 
     outfile.write(f'# m n\n')
@@ -66,7 +72,7 @@ def output_dat_file(a,b,m,total_amount,block_capacity,LP_list, DP_list, num_edge
     outfile.write(f'# d (last one for m+1)\n')
     outfile.write(f'{" ".join(DP_list)}\n')
     outfile.write(f'# q\n')
-    outfile.write(f'{(str(block_capacity) + " ")*(a*b)}\n')
+    outfile.write(f'{" ".join([str(cap) for cap in block_capacity_list])}\n')
     outfile.write(f'# E (first line is the size of E)\n')
     outfile.write(f'{len(Edge_list)}\n')
     for edge in Edge_list:

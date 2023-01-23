@@ -2,7 +2,7 @@ import openpyxl as excel
 from openpyxl.styles.borders import Border, Side
 from openpyxl.styles import Alignment
 from openpyxl.utils import get_column_letter
-import test, flow
+import generate_sample
 
 # color setting
 red_fill = excel.styles.PatternFill(patternType='solid', fgColor='FF0000')
@@ -25,16 +25,18 @@ brue_font = excel.styles.fonts.Font(color='0000FF')
 
 
 def paint_cell(a, b, sol, ws):
+    ramp_block = generate_sample.get_ramp_brock(a, b)
+    
     for i in range(a):
         for j in range(b):
-            # print(f"{i*a+j}: {sol[i*a+j]}")
             ws.cell(row=2*i+1, column=2*j+1).value = i*b+j
             ws.cell(row=2*i+1, column=2*j+1).border = block_border
             ws.cell(row=2*i+1, column=2*j+1).alignment = center_alignment
             
-            if sol[i*b+j] == 0:
-                pass
-            elif sol[i*b+j] == 1:
+            if i*b+j == ramp_block:
+                continue
+            
+            if sol[i*b+j] == 1:
                 ws.cell(row=2*i+1, column=2*j+1).fill = red_fill
             elif sol[i*b+j] == 2:
                 ws.cell(row=2*i+1, column=2*j+1).fill = blue_fill
@@ -197,7 +199,7 @@ def fit_cell_size(ws, a, b):
 
 
 def visualize_solution(sol, sola, solb, a, b, model_name: str):
-    sol[0] = 0 # 0 is not used
+    # sol[0] = 0 # 0 is not used
     
     wb = excel.Workbook()
     wb.save("results_flow.xlsx")

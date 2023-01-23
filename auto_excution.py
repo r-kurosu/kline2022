@@ -3,13 +3,13 @@ import visualize_sol
 import test
 import flow
 
+a = 4 # input row of brock
+b = 16 # input column of brock
+m = 4 # input number of car
+total_amount = 120 # input total amount of car
+
 
 def main():
-    a = 5 # input row of brock
-    b = 5 # input column of brock
-    m = 4 # input number of car
-    total_amount = 120 # input total amount of car
-    
     # 1. generate sample data
     generate_sample.main(a, b, m, total_amount)
     
