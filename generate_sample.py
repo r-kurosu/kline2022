@@ -5,10 +5,10 @@ import math
 def get_ramp_brock(a, b):
     if b % 2 == 0:
         enter_block = int(b/2)
-        exit_block = int(b/2) - 1
+        exit_block = 0 #TODO: 今は出口が0固定だが、自由に選択できるようにする
     else:
         enter_block = math.floor(b/2)
-        exit_block = math.floor(b/2)
+        exit_block = 0
 
     return enter_block, exit_block
 
