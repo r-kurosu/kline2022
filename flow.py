@@ -35,7 +35,7 @@ def main():
     q_sum = sum(q.values())
     d_max, o_max = max(d), max(o)
 
-    # TODO: ランプブロックの取得
+    # ランプブロックの取得
     a,b = auto_excution.a, auto_excution.b
     ramp_block = generate_sample.get_ramp_brock(a,b)
     

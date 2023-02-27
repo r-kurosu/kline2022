@@ -30,11 +30,11 @@ def main():
         items = lines.pop(0).split(' ')
         E.add((int(items[0]), int(items[1]),))
         E_b.add((int(items[1]), int(items[0]),))
-        
+    
     q_sum = sum(q.values())
     d_max, o_max = max(d), max(o)
 
-    # TODO: ランプブロックの取得
+    # ランプブロックの取得
     a, b = auto_excution.a, auto_excution.b
     ramp_block = generate_sample.get_ramp_brock(a, b)
     
