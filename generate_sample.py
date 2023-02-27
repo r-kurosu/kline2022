@@ -4,28 +4,39 @@ import math
 
 def get_ramp_brock(a, b):
     if b % 2 == 0:
-        return int(b/2)
+        enter_block = int(b/2)
+        exit_block = int(b/2) - 1
     else:
-        return math.floor(b/2)
+        enter_block = math.floor(b/2)
+        exit_block = math.floor(b/2)
+
+    return enter_block, exit_block
 
 
 def generate_block(a, b):
-    num_edge = a*(b-1) + b*(a-1) + 1
-    ramp_block = get_ramp_brock(a, b)
+    enter_block, exit_block = get_ramp_brock(a, b)
     
     edge_list = []
+    # 入口を中心に、BFS的にブロックリスト（枝）を作成
     for i in range(a):
         for j in range(b-1):
-            if i*b+j >= ramp_block:
-                edge_list.append((i*b+j, i*b+j+1)) # NOTE: fix 1/20 12:30
+            if i*b+j >= enter_block :
+                edge_list.append((i*b+j, i*b+j+1))
             else:
                 edge_list.append((i*b+j+1, i*b+j))
     
     for i in range(a-1):
         for j in range(b):
-            edge_list.append((i*b+j, i*b+j+b)) # NOTE: fix 1/20 12:30
+            edge_list.append((i*b+j, i*b+j+b))
     
-    return num_edge, edge_list
+    # edge_listから入口への枝と、出口への枝を削除する
+    for edge in edge_list:
+        if edge[1] == enter_block:
+            edge_list.remove(edge)
+        if edge[0] == exit_block:
+            edge_list.remove(edge)
+    
+    return edge_list
 
 
 def generate_car(m, total_amount, port_list):
@@ -38,14 +49,14 @@ def generate_car(m, total_amount, port_list):
             dp = random.choice(port_list)
             if lp < dp:
                 break
-        amount = total_amount // m # TODO:車種によって可変にする 
         
+        amount = total_amount // m # TODO:今は全ての車種が同じ台数であるが、車種によって可変にする 
         car_info_list.append((lp, dp, amount))
         
     return car_info_list
 
 
-def output_dat_file(a,b,m,total_amount,block_capacity,LP_list, DP_list, num_edge, Edge_list):
+def output_dat_file(a,b,m,total_amount,block_capacity,LP_list, DP_list, Edge_list):
     LP_list.append(port_list[0]-1)
     DP_list.append(port_list[-1]+1)
     
@@ -53,8 +64,9 @@ def output_dat_file(a,b,m,total_amount,block_capacity,LP_list, DP_list, num_edge
     DP_list = [str(i) for i in DP_list]
     
     block_capacity_list = [block_capacity]*(a*b)
-    ramp_block = get_ramp_brock(a, b)
-    block_capacity_list[ramp_block] = 0
+    enter_block, exit_block = get_ramp_brock(a, b)
+    block_capacity_list[enter_block] = 0
+    block_capacity_list[exit_block] = 0
     
     outfile = open('sample_data.dat', 'w')
 
@@ -89,21 +101,15 @@ def main(a, b, m, total_amount):
     if input_check(a, b, m, total_amount) == False:
         print("input error")
         print("please check input")
-        return
+        # return
     else:
         print("input OK")
         
-    num_edge, edge_list = generate_block(a, b)
+    edge_list = generate_block(a, b)
     car_info_list = generate_car(m, total_amount, port_list)
-    block_capacity = math.ceil(total_amount / (a * b - 1))
-    
-    # print(f"num_block: {num_brock}")
-    # print(f"num_edge: {num_edge}")
-    # print(f"block_capcity: {block_capacity}")
-    # print(f"edge_list: {edge_list}")
-    # print(f"car_info_list(LP, DP, amount): {car_info_list}")
+    block_capacity = math.ceil(total_amount / (a * b - 2))
 
-    output_dat_file(a,b,m,total_amount,block_capacity,[i[0] for i in car_info_list], [i[1] for i in car_info_list], num_edge, edge_list)
+    output_dat_file(a,b,m,total_amount,block_capacity,[i[0] for i in car_info_list], [i[1] for i in car_info_list], edge_list)
     
     return
 
@@ -111,7 +117,7 @@ def main(a, b, m, total_amount):
 # if __name__ == "__main__":
 #     a = 5 # input row of brock
 #     b = 6 # input column of brock
-#     m = 4 # input number of car
+#     m = 4 # input number of car kinds
 #     total_amount = 120 # input total amount of car
     
 #     main(a, b, m, total_amount)
