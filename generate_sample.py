@@ -50,7 +50,8 @@ def generate_car(m, total_amount, port_list):
             if lp < dp:
                 break
         
-        amount = total_amount // m # TODO:今は全ての車種が同じ台数であるが、車種によって可変にする 
+        # amount = total_amount // m # TODO:今は全ての車種が同じ台数であるが、車種によって可変にする 
+        amount = math.floor(total_amount / m)
         car_info_list.append((lp, dp, amount))
         
     return car_info_list

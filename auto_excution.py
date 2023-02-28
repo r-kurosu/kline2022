@@ -3,6 +3,7 @@ import visualize_sol
 import test
 import flow
 
+# input parameters !!!
 a = 4 # input row of block
 b = 16 # input column of block
 m = 1 # input number of car kinds
