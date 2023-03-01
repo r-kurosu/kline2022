@@ -72,7 +72,7 @@ def output_dat_file(a,b,m,total_amount,block_capacity,LP_list, DP_list, Edge_lis
     outfile = open('sample_data.dat', 'w')
 
     outfile.write(f'# m n\n')
-    outfile.write(f'{m} {a*b-1}\n')
+    outfile.write(f'{m} {a*b}\n')
     outfile.write(f'# p\n')
     outfile.write(f'{(str(total_amount//(m)) + " ")*(m)}\n')
     outfile.write(f'# o (last one for m+1)\n')
