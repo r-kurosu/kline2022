@@ -13,23 +13,20 @@ def get_ramp_brock(a, b):
     return enter_block, exit_block
 
 
-def generate_block(a, b):
-    enter_block, exit_block = get_ramp_brock(a, b)
-    
+def generate_block(a, b):    
     edge_list = []
-    # 入口を中心に、BFS的にブロックリスト（枝）を作成
+    
+    # 一旦全ての枝を作成
     for i in range(a):
         for j in range(b-1):
-            if i*b+j >= enter_block :
-                edge_list.append((i*b+j, i*b+j+1))
-            else:
-                edge_list.append((i*b+j+1, i*b+j))
+            edge_list.append((i*b+j, i*b+j+1))
     
     for i in range(a-1):
         for j in range(b):
             edge_list.append((i*b+j, i*b+j+b))
     
-    # edge_listから入口への枝と、出口への枝を削除する
+    # 入口0への枝と、出口n+1からの枝を削除する
+    enter_block, exit_block = get_ramp_brock(a, b)
     for edge in edge_list:
         if edge[1] == enter_block:
             edge_list.remove(edge)
