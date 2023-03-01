@@ -1,0 +1,190 @@
+import openpyxl as excel
+from openpyxl.styles.borders import Border, Side
+from openpyxl.styles import Alignment
+from openpyxl.utils import get_column_letter
+import generate_sample
+
+# color setting
+yellow_fill = excel.styles.PatternFill(patternType='solid', fgColor='FFFF00')
+red_fill = excel.styles.PatternFill(patternType='solid', fgColor='FF0000')
+blue_fill = excel.styles.PatternFill(patternType='solid', fgColor='0000FF')
+green_fill = excel.styles.PatternFill(patternType='solid', fgColor='00FF00')
+pink_fill = excel.styles.PatternFill(patternType='solid', fgColor='FFC0CB')
+skyblue_fill = excel.styles.PatternFill(patternType='solid', fgColor='87CEEB')
+
+color_list = [yellow_fill, red_fill, blue_fill, green_fill, pink_fill, skyblue_fill]
+
+block_border = Border(top=Side(style='thin', color='000000'), 
+                bottom=Side(style='thin', color='000000'), 
+                left=Side(style='thin', color='000000'),
+                right=Side(style='thin', color='000000'))
+
+ramp_border = Border(top=Side(style='mediumDashed', color='FF0000'), 
+                bottom=Side(style='mediumDashed', color='FF0000'), 
+                left=Side(style='mediumDashed', color='FF0000'),
+                right=Side(style='mediumDashed', color='FF0000'))
+
+center_alignment = Alignment(horizontal="centerContinuous", vertical="center" , wrap_text=True)
+red_font = excel.styles.fonts.Font(color='FF0000')
+brue_font = excel.styles.fonts.Font(color='0000FF')
+
+
+def paint_cell(a, b, sol, ws):
+    enter_block, exit_block = generate_sample.get_ramp_brock(a, b)
+    
+    for i in range(a):
+        for j in range(b):
+            ws.cell(row=2*i+1, column=2*j+1).value = i*b+j
+            ws.cell(row=2*i+1, column=2*j+1).border = block_border
+            ws.cell(row=2*i+1, column=2*j+1).alignment = center_alignment
+            
+            if i*b+j == enter_block or i*b+j == exit_block:
+                continue
+            
+            if sol[i*b+j] == 0:
+                ws.cell(row=2*i+1, column=2*j+1).fill = yellow_fill
+            elif sol[i*b+j] == 1:
+                ws.cell(row=2*i+1, column=2*j+1).fill = red_fill
+            elif sol[i*b+j] == 2:
+                ws.cell(row=2*i+1, column=2*j+1).fill = blue_fill
+            elif sol[i*b+j] == 3:
+                ws.cell(row=2*i+1, column=2*j+1).fill = green_fill
+            else:
+                print("車種が多すぎます、あたらしい色を追加してください")
+            
+    return ws
+
+
+def point_enter_cell(a, b, in_out_flag, ws):
+    enter_block, exit_block = generate_sample.get_ramp_brock(a, b)
+    
+    if in_out_flag == "in":
+        ws.cell(row=2*(enter_block//b)+1, column=2*(enter_block%b)+1).border = ramp_border
+    elif in_out_flag == "out":
+        ws.cell(row=2*(exit_block//b)+1, column=2*(exit_block%b)+1).border = ramp_border
+    
+    return ws
+
+
+def print_edge_in(a, b, sola, ws):
+    for edge in sola:
+        if edge[0] + 1 == edge[1]:
+            # print(f"edge →: {edge}")
+            cell_contents = ws.cell(row=2*(edge[0]//b)+1, column=2*(edge[0]%b)+2).value
+            if cell_contents is not None:
+                cell_contents = cell_contents + "\n"
+            ws.cell(row=2*(edge[0]//b)+1, column=2*(edge[0]%b)+2).value = (cell_contents or "") + "→"
+            ws.cell(row=2*(edge[0]//b)+1, column=2*(edge[0]%b)+2).alignment = center_alignment
+        elif edge[0] - 1 == edge[1]:
+            # print(f"edge ←: {edge}")
+            cell_contents = ws.cell(row=2*(edge[0]//b)+1, column=2*(edge[0]%b)).value
+            if cell_contents is not None:
+                cell_contents = cell_contents + "\n"
+            ws.cell(row=2*(edge[0]//b)+1, column=2*(edge[0]%b)).value = (cell_contents or "") + "←"
+            ws.cell(row=2*(edge[0]//b)+1, column=2*(edge[0]%b)).alignment = center_alignment
+        elif edge[0] + b == edge[1]:
+            # print(f"edge: {edge}")
+            cell_contents = ws.cell(row=2*(edge[0]//b)+2, column=2*(edge[0]%b)+1).value
+            ws.cell(row=2*(edge[0]//b)+2, column=2*(edge[0]%b)+1).value = (cell_contents or "") + "↓"
+            ws.cell(row=2*(edge[0]//b)+2, column=2*(edge[0]%b)+1).alignment = center_alignment
+        elif edge[0] - b == edge[1]:
+            # print(f"edge: {edge}")
+            cell_contents = ws.cell(row=2*(edge[0]//b), column=2*(edge[0]%b)+1).value
+            ws.cell(row=2*(edge[0]//b), column=2*(edge[0]%b)+1).value = (cell_contents or "") + "↑"
+            ws.cell(row=2*(edge[0]//b), column=2*(edge[0]%b)+1).alignment = center_alignment
+    return
+
+
+def print_edge_out(a, b, solb, ws):
+    for edge in solb:
+        if edge[0] + 1 == edge[1]:
+            # print(f"edge: {edge}")
+            cell_contents = ws.cell(row=2*(edge[0]//b)+1, column=2*(edge[0]%b)+2).value
+            if cell_contents is not None:
+                cell_contents = cell_contents + "\n"
+            ws.cell(row=2*(edge[0]//b)+1, column=2*(edge[0]%b)+2).value = (cell_contents or "") + "→"
+            ws.cell(row=2*(edge[0]//b)+1, column=2*(edge[0]%b)+2).alignment = center_alignment
+        elif edge[0] - 1 == edge[1]:
+            # print(f"edge: {edge}")
+            cell_contents = ws.cell(row=2*(edge[0]//b)+1, column=2*(edge[0]%b)).value
+            if cell_contents is not None:
+                cell_contents = cell_contents + "\n"
+            ws.cell(row=2*(edge[0]//b)+1, column=2*(edge[0]%b)).value = (cell_contents or "") + "←"
+            ws.cell(row=2*(edge[0]//b)+1, column=2*(edge[0]%b)).alignment = center_alignment
+        elif edge[0] + b == edge[1]:
+            # print(f"edge: {edge}")
+            cell_contents = ws.cell(row=2*(edge[0]//b)+2, column=2*(edge[0]%b)+1).value
+            ws.cell(row=2*(edge[0]//b)+2, column=2*(edge[0]%b)+1).value = (cell_contents or "") + "↓"
+            ws.cell(row=2*(edge[0]//b)+2, column=2*(edge[0]%b)+1).alignment = center_alignment
+        elif edge[0] - b == edge[1]:
+            # print(f"edge: {edge}")
+            cell_contents = ws.cell(row=2*(edge[0]//b), column=2*(edge[0]%b)+1).value
+            ws.cell(row=2*(edge[0]//b), column=2*(edge[0]%b)+1).value = (cell_contents or "") + "↑"
+            ws.cell(row=2*(edge[0]//b), column=2*(edge[0]%b)+1).alignment = center_alignment
+    
+    return
+
+
+
+def add_annotation(ws, a, b, m, LP_list, DP_list):
+    ws.cell(row=1, column=2*b+1).value = f"car"
+    ws.cell(row=1, column=2*b+1).alignment = center_alignment
+    ws.cell(row=1, column=2*b+2).value = f"LP → DP"
+    ws.cell(row=1, column=2*b+2).alignment = center_alignment
+    
+    for i in range(m):
+        ws.cell(row=i+2, column=2*b+1).value = f"car {i}"
+        ws.cell(row=i+2, column=2*b+1).fill = color_list[i]
+        ws.cell(row=i+2, column=2*b+1).alignment = center_alignment
+        ws.cell(row=i+2, column=2*b+2).value = f"{LP_list[i]} → {DP_list[i]}"
+        ws.cell(row=i+2, column=2*b+2).alignment = center_alignment
+        
+    return ws
+
+
+def fit_cell_size(ws, a, b):
+    for i in range(2*a+1):
+        if i % 2 == 1:
+            ws.row_dimensions[i+1].height = 20
+        else:
+            ws.row_dimensions[i+1].height = 50
+    for i in range(2*b+1):
+        if i % 2 == 1:
+            ws.column_dimensions[get_column_letter(i+1)].width = 5
+        else:
+            ws.column_dimensions[get_column_letter(i+1)].width = 10
+    
+    return
+
+
+def visualize_solution(sol, sola, solb, a, b, m, LP_list, DP_list, model_name: str):
+    wb = excel.Workbook()
+    
+    # 積み込み時の情報
+    ws = wb.active
+    ws.title = "積み込み"
+    ws = paint_cell(a, b, sol, ws)
+    print_edge_in(a, b, sola, ws)
+    add_annotation(ws, a, b, m, LP_list, DP_list)
+    point_enter_cell(a,b,"in",ws)
+    fit_cell_size(ws, a, b)
+    
+    # 搬出時の情報
+    wb.create_sheet(title="搬出")
+    ws = wb["搬出"]
+    ws = paint_cell(a, b, sol, ws)
+    print_edge_out(a, b, solb, ws)
+    add_annotation(ws, a, b, m, LP_list, DP_list)
+    point_enter_cell(a,b,"out",ws)
+    fit_cell_size(ws, a, b)
+    
+    wb.save(f"results_{model_name}.xlsx")
+    
+    return
+
+
+if __name__ == "__main__":
+    a = 5 # input row of brock
+    b = 5 # input column of brock
+    # main(a,b)
+
