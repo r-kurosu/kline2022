@@ -1,5 +1,5 @@
 import generate_sample
-import visualize_sol
+import archive.visualize_sol as visualize_sol
 import test
 import flow
 

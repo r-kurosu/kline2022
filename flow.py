@@ -1,6 +1,6 @@
 import gurobipy as gp
 import sys
-import auto_excution
+import archive.auto_excution as auto_excution
 import generate_sample
 
 

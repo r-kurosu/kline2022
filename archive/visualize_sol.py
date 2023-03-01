@@ -25,6 +25,7 @@ brue_font = excel.styles.fonts.Font(color='0000FF')
 
 
 def paint_cell(a, b, sol, ws):
+    return ws
     ramp_block = generate_sample.get_ramp_brock(a, b)
     
     for i in range(a):

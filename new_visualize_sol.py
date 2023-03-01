@@ -2,7 +2,7 @@ import openpyxl as excel
 from openpyxl.styles.borders import Border, Side
 from openpyxl.styles import Alignment
 from openpyxl.utils import get_column_letter
-import generate_sample
+import make_instance_tool
 
 # color setting
 yellow_fill = excel.styles.PatternFill(patternType='solid', fgColor='FFFF00')
@@ -30,7 +30,7 @@ brue_font = excel.styles.fonts.Font(color='0000FF')
 
 
 def paint_cell(a, b, sol, ws):
-    enter_block, exit_block = generate_sample.get_ramp_brock(a, b)
+    enter_block, exit_block = make_instance_tool.get_ramp_block(a, b)
     
     for i in range(a):
         for j in range(b):
@@ -56,7 +56,7 @@ def paint_cell(a, b, sol, ws):
 
 
 def point_enter_cell(a, b, in_out_flag, ws):
-    enter_block, exit_block = generate_sample.get_ramp_brock(a, b)
+    enter_block, exit_block = make_instance_tool.get_ramp_block(a, b)
     
     if in_out_flag == "in":
         ws.cell(row=2*(enter_block//b)+1, column=2*(enter_block%b)+1).border = ramp_border

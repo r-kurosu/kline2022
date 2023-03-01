@@ -1,8 +1,7 @@
 import gurobipy as gp
 import sys
 import random, math
-import auto_excution
-import generate_sample
+import make_instance_tool
 import new_visualize_sol
 import MASTER
 
@@ -10,7 +9,7 @@ import MASTER
 def input_data(input_a, input_b, input_m, input_total_amount):
     # ブロック
     V_p = [i for i in range(input_a * input_b)]
-    enter_block, exit_block = generate_sample.get_ramp_brock(input_a, input_b)
+    enter_block, exit_block = make_instance_tool.get_ramp_block(input_a, input_b)
     V = [i for i in V_p if i != enter_block and i != exit_block]
     q = [input_total_amount // (input_a * input_b -2) + 1 for _ in range(input_a * input_b)]
     q[enter_block] = 0
@@ -22,7 +21,7 @@ def input_data(input_a, input_b, input_m, input_total_amount):
     M_p = [i for i in range(input_m + 1)]
     
     port_list = MASTER.PORT_list
-    car_info_list = generate_sample.generate_car(input_m, input_total_amount, port_list)
+    car_info_list = make_instance_tool.generate_car(input_m, input_total_amount, port_list)
     o = [car_info[0] for car_info in car_info_list]
     d = [car_info[1] for car_info in car_info_list]
     p = [car_info[2] for car_info in car_info_list]
@@ -32,7 +31,7 @@ def input_data(input_a, input_b, input_m, input_total_amount):
     d.append(7)
     
     # 枝
-    E = generate_sample.generate_block(input_a, input_b)
+    E = make_instance_tool.generate_block(input_a, input_b)
     E_bar = [(j,i) for (i,j) in E]
     
     # a
