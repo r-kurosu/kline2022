@@ -66,3 +66,29 @@ def generate_block(a, b):
             edge_list = [e for e in edge_list if e != edge]
     
     return edge_list
+
+
+def make_Next_block_list(i):
+    a, b = MASTER.input_a, MASTER.input_b
+    Next_block_list = []
+    
+    if not i % b == 0:
+        Next_block_list.append(i - 1)
+    if not i % b == b-1:
+        Next_block_list.append(i + 1)
+    if not i < b:
+        Next_block_list.append(i - b)
+    if not i >= b*(a-1):
+        Next_block_list.append(i + b)
+    
+    enter_block, exit_block = get_ramp_block(a, b)
+    try:
+        Next_block_list.remove(enter_block)
+    except:
+        pass
+    try:
+        Next_block_list.remove(exit_block)
+    except:
+        pass
+    
+    return Next_block_list

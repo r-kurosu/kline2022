@@ -182,10 +182,15 @@ def visualize_solution(sol, sola, solb, a, b, m, LP_list, DP_list, model_name: s
     fit_cell_size(ws, a, b)
     
     
+    model_name = "results"
     if MASTER.potential_flag == 0:
-        wb.save(f"results_{model_name}.xlsx")
+        model_name += "_Normal"
     else:
-        wb.save(f"POTENTIAL_results_{model_name}.xlsx")
+        model_name += "_Potential"
+    if MASTER.next_block_flag == 1:
+        model_name += "_NextBlock"
+
+    wb.save(f"{model_name}.xlsx")
     
     return
 

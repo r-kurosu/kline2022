@@ -114,6 +114,19 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
             if i != enter_block:
                 model.addConstr(nu[i] >= nu[j] + 1 - len(V_p) + len(V_p)*beta[i,j], name=f"potential_nu_{i}_{j}")
 
+    if MASTER.next_block_flag == 1:
+        # Next block model （隣接するブロックに配置する車種を同じにする）
+        z = {(i, j, k) : model.addVar(vtype = gp.GRB.BINARY, name = f"z_{i}_{j}_{k}") for i in V_p for j in V_p for k in M}
+        for i in V:
+            N_i = make_instance_tool.make_Next_block_list(i)
+            for j in N_i:
+                for k in M:
+                    model.addConstr(-z[i,j,k] <= x[i,k] - x[j,k], name=f"constr_l_{i}_{j}_{k}")
+                    model.addConstr(z[i,j,k] >= x[i,k] - x[j,k], name=f"constr_r_{i}_{j}_{k}")
+        
+        model.setObjective(gp.quicksum(z[i,j,k] for i in V_p for j in V_p for k in M), sense=gp.GRB.MINIMIZE)
+    
+    
     # 求解
     model.update()
     model.params.LogToConsole = False #NOTE: これをTrueにすると，Gurobiの出力がコンソールに出力される
