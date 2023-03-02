@@ -34,7 +34,7 @@ def generate_dummy_car(port_list):
         lp = random.choice(port_list[:math.floor(len(port_list)/2)])
         dp = random.choice(port_list[math.floor(len(port_list)/2):])
     else:
-        random.seed(MASTER.random_flag)
+        random.seed(MASTER.random_flag + 100)
         lp = random.choice(port_list[:math.floor(len(port_list)/2)])
         dp = random.choice(port_list[math.floor(len(port_list)/2):])
     
