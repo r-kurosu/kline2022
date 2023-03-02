@@ -1,5 +1,6 @@
 import random
 import math
+import MASTER
 
 def get_ramp_block(a, b):
     enter_block = math.floor(b/2)
@@ -11,15 +12,33 @@ def get_ramp_block(a, b):
 def generate_car(m, total_amount, port_list):
     car_info_list = []
     
-    for _ in range(m):
+    for i in range(m):
         # LPは前半の半分から、DPは後半の半分からランダムに選択する
-        lp = random.choice(port_list[:math.floor(len(port_list)/2)])
-        dp = random.choice(port_list[math.floor(len(port_list)/2):])
+        if MASTER.random_flag == 0:
+            lp = random.choice(port_list[:math.floor(len(port_list)/2)])
+            dp = random.choice(port_list[math.floor(len(port_list)/2):])
+        else:
+            random.seed(MASTER.random_flag + i)
+            lp = random.choice(port_list[:math.floor(len(port_list)/2)])
+            dp = random.choice(port_list[math.floor(len(port_list)/2):])
+            
         amount = math.floor(total_amount / m) # TODO:今は全ての車種が同じ台数であるが、車種によって可変にする 
         
         car_info_list.append((lp, dp, amount))
         
     return car_info_list
+
+
+def generate_dummy_car(port_list):
+    if MASTER.random_flag == 0:
+        lp = random.choice(port_list[:math.floor(len(port_list)/2)])
+        dp = random.choice(port_list[math.floor(len(port_list)/2):])
+    else:
+        random.seed(MASTER.random_flag)
+        lp = random.choice(port_list[:math.floor(len(port_list)/2)])
+        dp = random.choice(port_list[math.floor(len(port_list)/2):])
+    
+    return lp, dp
 
 
 def generate_block(a, b):    

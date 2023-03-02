@@ -3,6 +3,7 @@ from openpyxl.styles.borders import Border, Side
 from openpyxl.styles import Alignment
 from openpyxl.utils import get_column_letter
 import make_instance_tool
+import MASTER
 
 # color setting
 yellow_fill = excel.styles.PatternFill(patternType='solid', fgColor='FFFF00')
@@ -11,8 +12,12 @@ blue_fill = excel.styles.PatternFill(patternType='solid', fgColor='0000FF')
 green_fill = excel.styles.PatternFill(patternType='solid', fgColor='00FF00')
 pink_fill = excel.styles.PatternFill(patternType='solid', fgColor='FFC0CB')
 skyblue_fill = excel.styles.PatternFill(patternType='solid', fgColor='87CEEB')
+rime_fill = excel.styles.PatternFill(patternType='solid', fgColor='FAEBD7')
+gray_fill = excel.styles.PatternFill(patternType='solid', fgColor='808080')
+purple_fill = excel.styles.PatternFill(patternType='solid', fgColor='800080')
+orange_fill = excel.styles.PatternFill(patternType='solid', fgColor='FFA500')
 
-color_list = [yellow_fill, red_fill, blue_fill, green_fill, pink_fill, skyblue_fill]
+color_list = [yellow_fill, red_fill, blue_fill, green_fill, pink_fill, skyblue_fill, rime_fill, gray_fill, purple_fill, orange_fill]
 
 block_border = Border(top=Side(style='thin', color='000000'), 
                 bottom=Side(style='thin', color='000000'), 
@@ -40,17 +45,8 @@ def paint_cell(a, b, sol, ws):
             
             if i*b+j == enter_block or i*b+j == exit_block:
                 continue
-            
-            if sol[i*b+j] == 0:
-                ws.cell(row=2*i+1, column=2*j+1).fill = yellow_fill
-            elif sol[i*b+j] == 1:
-                ws.cell(row=2*i+1, column=2*j+1).fill = red_fill
-            elif sol[i*b+j] == 2:
-                ws.cell(row=2*i+1, column=2*j+1).fill = blue_fill
-            elif sol[i*b+j] == 3:
-                ws.cell(row=2*i+1, column=2*j+1).fill = green_fill
             else:
-                print("車種が多すぎます、あたらしい色を追加してください")
+                ws.cell(row=2*i+1, column=2*j+1).fill = color_list[sol[i*b+j]]
             
     return ws
 
@@ -138,6 +134,13 @@ def add_annotation(ws, a, b, m, LP_list, DP_list):
         ws.cell(row=i+2, column=2*b+1).alignment = center_alignment
         ws.cell(row=i+2, column=2*b+2).value = f"{LP_list[i]} → {DP_list[i]}"
         ws.cell(row=i+2, column=2*b+2).alignment = center_alignment
+    
+    # dummy car
+    ws.cell(row=m+2, column=2*b+1).value = f"dummy car"
+    ws.cell(row=m+2, column=2*b+1).fill = color_list[m]
+    ws.cell(row=m+2, column=2*b+1).alignment = center_alignment
+    ws.cell(row=m+2, column=2*b+2).value = f"{LP_list[m]} → {DP_list[m]}"
+    ws.cell(row=m+2, column=2*b+2).alignment = center_alignment
         
     return ws
 
@@ -178,7 +181,11 @@ def visualize_solution(sol, sola, solb, a, b, m, LP_list, DP_list, model_name: s
     point_enter_cell(a,b,"out",ws)
     fit_cell_size(ws, a, b)
     
-    wb.save(f"results_{model_name}.xlsx")
+    
+    if MASTER.potential_flag == 0:
+        wb.save(f"results_{model_name}.xlsx")
+    else:
+        wb.save(f"POTENTIAL_results_{model_name}.xlsx")
     
     return
 

@@ -2,7 +2,7 @@ import gurobipy as gp
 import sys
 import random, math
 import make_instance_tool
-import new_visualize_sol
+import new_visualize_tool
 import MASTER
 
 
@@ -27,8 +27,9 @@ def input_data(input_a, input_b, input_m, input_total_amount):
     p = [car_info[2] for car_info in car_info_list]
     o_max = max(o)
     d_max = max(d) 
-    o.append(1) # TODO: ここでm+1番目の車の情報を追加する（今は適当）
-    d.append(7)
+    lp_dummy, dp_dummy = make_instance_tool.generate_dummy_car(port_list)
+    o.append(lp_dummy)
+    d.append(dp_dummy)
     
     # 枝
     E = make_instance_tool.generate_block(input_a, input_b)
@@ -49,7 +50,7 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
     beta = {(i,j): model.addVar(vtype = gp.GRB.BINARY, name = f"b[{i},{j}]") for (i,j) in E_bar}
         
     # 定数固定
-    #TODO: ここで一部の変数を固定する
+    #NOTE: ここで一部の変数を固定する
     x.update({(exit_block, k): 0 for k in M})
     x.update({(i,len(M)): 0 for i in V})
     x[exit_block, len(M)] = 1
@@ -90,7 +91,28 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
     # 制約39 TODO: 向き制約を追加する
     # for i in V + {exit_block}:
     #     model.addConstr(gp.quicksum(a[j,i]*alpha[j,i] for j in V if (j,i) in E) == gp.quicksum(a[j,i]*beta[i,j] for j in V if (i,j) in E_bar), name=f"39_{i}")
+    
+    if MASTER.potential_flag == 1:
+        # Potential model
+        # 変数定義
+        mu = [model.addVar(vtype = gp.GRB.CONTINUOUS, name = f"mu_{i}") for i in V_p]
+        nu = [model.addVar(vtype = gp.GRB.CONTINUOUS, name = f"nu_{i}") for i in V_p]
+        # mu = [model.addVar(vtype = gp.GRB.CONTINUOUS, lb=0, ub=len(V_p), name = f"mu_{i}") for i in V_p]
+        # nu = [model.addVar(vtype = gp.GRB.CONTINUOUS, lb=0, ub=len(V_p), name = f"nu_{i}") for i in V_p]
+        mu[enter_block] = 0
+        nu[enter_block] = 0
+        # 制約条件
+        for edge in E:
+            i = edge[0]
+            j = edge[1]
+            if j != enter_block:
+                model.addConstr(mu[i] <= mu[j] - 1 + len(V_p) - len(V_p)*alpha[i,j], name=f"potential_mu_{i}_{j}")
         
+        for edge in E_bar:
+            i = edge[0]
+            j = edge[1]
+            if i != enter_block:
+                model.addConstr(nu[i] >= nu[j] + 1 - len(V_p) + len(V_p)*beta[i,j], name=f"potential_nu_{i}_{j}")
 
     # 求解
     model.update()
@@ -107,6 +129,7 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
         print(f"total capacity: {sum(q)}")
         for k in M:
             print(f"car {k}: LP: {o[k]}, DP: {d[k]}, amount: {p[k]}")
+        print(f"dummy car: LP: {o[-1]}, DP: {d[-1]}")
         print(f"number of block: {len(V_p)}")
         print(f"capacity of block: {q}")
         
@@ -147,7 +170,7 @@ def main():
     sol, sola, solb = solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a)
     
     if sol is not None:
-        new_visualize_sol.visualize_solution(sol, sola, solb, input_a, input_b, len(M), o, d, "new_tree_model")
+        new_visualize_tool.visualize_solution(sol, sola, solb, input_a, input_b, len(M), o, d, "new_tree_model")
     
     return
 
