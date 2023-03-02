@@ -1,6 +1,6 @@
 import gurobipy as gp
 import sys
-import random, math
+import random, math, time
 import make_instance_tool
 import new_visualize_tool
 import MASTER
@@ -174,6 +174,8 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
 
 
 def main():
+    begin_time = time.time()
+    
     input_a = MASTER.input_a
     input_b = MASTER.input_b
     input_m = MASTER.input_m
@@ -184,6 +186,8 @@ def main():
     
     if sol is not None:
         new_visualize_tool.visualize_solution(sol, sola, solb, input_a, input_b, len(M), o, d, "new_tree_model")
+    end_time = time.time()
+    print(f"calculation time: {end_time - begin_time} sec")
     
     return
 

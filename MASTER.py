@@ -12,4 +12,4 @@ random_flag = 0 #0: random, 1~100: fixed seed
 
 # choose model
 potential_flag = 1 #0: no potential, 1: with potential
-next_block_flag = 1 #0: no block, 1: with block
+next_block_flag = 0 #0: no block, 1: with block
