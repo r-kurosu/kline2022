@@ -1,8 +1,10 @@
 # input parameters
 input_a = 4
 input_b = 16
-input_m = 10
-input_total_amount = 500
+input_m = 4 # 車の数
+input_total_amount = 500 # 車の総面積
+
+gap_area = 50 # ブロック容量に対するギャップ面積（0は車の総面積＝ブロックの総キャパシティ）
 
 TIME_LIMIT = 100
 

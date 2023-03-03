@@ -11,7 +11,8 @@ def input_data(input_a, input_b, input_m, input_total_amount):
     V_p = [i for i in range(input_a * input_b)]
     enter_block, exit_block = make_instance_tool.get_ramp_block(input_a, input_b)
     V = [i for i in V_p if i != enter_block and i != exit_block]
-    q = [math.ceil(input_total_amount / (input_a * input_b -2)) for _ in range(input_a * input_b)]
+    # q = [math.ceil(input_total_amount / (input_a * input_b -2)) for _ in range(input_a * input_b)]
+    q = [(input_total_amount + MASTER.gap_area) / (input_a * input_b -2) for _ in range(input_a * input_b)]
     q[enter_block] = 0
     q[exit_block] = 1
     # print(q)
@@ -143,10 +144,10 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
         print(f"total amount: {sum(p)}")
         print(f"total capacity: {sum(q)}")
         for k in M:
-            print(f"car {k}: LP: {o[k]}, DP: {d[k]}, amount: {p[k]}")
+            print(f"car {k}: LP: {o[k]}, DP: {d[k]}, area: {p[k]}")
         print(f"dummy car: LP: {o[-1]}, DP: {d[-1]}")
         print(f"number of block: {len(V_p)}")
-        print(f"capacity of block: {q}")
+        print(f"capacity of a block: {q[0]}")
         
         print("--------------------------------------")
         
@@ -167,9 +168,9 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
         print(f"total amount: {sum(p)}")
         print(f"total capacity: {sum(q)}")
         for k in M:
-            print(f"car {k}: LP: {o[k]}, DP: {d[k]}, amount: {p[k]}")
+            print(f"car {k}: LP: {o[k]}, DP: {d[k]}, area: {p[k]}")
         print(f"number of block: {len(V_p)}")
-        print(f"capacity of block: {q}")
+        print(f"capacity of a block: {q[0]}")
         return None, None, None
         
     return sol, sola, solb
