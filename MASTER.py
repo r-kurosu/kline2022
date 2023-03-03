@@ -1,7 +1,7 @@
 # input parameters
 input_a = 4
 input_b = 16
-input_m = 4 # 車の数
+input_m = 6 # 車の数
 input_total_amount = 500 # 車の総面積 (各車種の面積はランダム)
 
 # set port list
@@ -12,10 +12,10 @@ gap_area = 50 # ブロック容量に対するギャップ面積（0は車の総
 TIME_LIMIT = 100
 
 # set weight
-w1 = 1 # 
+w1 = 1 # 各ブロックに入る向きと出る向きに関するペナルティ
 w2 = 1 # 船と平行かどうかに関するペナルティ
-w3 = 1 # 
-w4 = 1 # 
+w3 = 0 # 各港のギャングの好みに関するペナルティ
+w4 = 0 # 席割り違反のペナルティ
 w5 = 1 # 隣接ブロックのペナルティ
 
 # set random seed

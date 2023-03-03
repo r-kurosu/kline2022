@@ -136,8 +136,17 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
                 model.addConstr(-z[i,j,k] <= x[i,k] - x[j,k], name=f"constr_l_{i}_{j}_{k}")
                 model.addConstr(z[i,j,k] >= x[i,k] - x[j,k], name=f"constr_r_{i}_{j}_{k}")
     
+    # 出る向きと入る向きを同じにする
+    y = {(i) : model.addVar(vtype = gp.GRB.BINARY, name = f"y_{i}") for i in V}
+    for i in V:
+        N_i = make_instance_tool.make_Next_block_list(i)
+        model.addConstr(-y[i] <= gp.quicksum(a[j,i]*alpha[j,i] for j in N_i), name=f"constr_l_{i}_{j}_{k}")
+        model.addConstr(y[i] >= gp.quicksum(a[j,i]*alpha[j,i] for j in N_i), name=f"constr_r_{i}_{j}_{k}")
+        
+        
     # 目的関数
     model.setObjective(
+        + MASTER.w1*gp.quicksum(y[i] for i in V)
         - MASTER.w2*(gp.quicksum(a[edge]*alpha[edge] for edge in E) + gp.quicksum(a_bar[edge]*beta[edge] for edge in E_bar))
         + MASTER.w5*gp.quicksum(z[i,j,k] for i in V_p for j in V_p for k in M), 
         sense=gp.GRB.MINIMIZE)
