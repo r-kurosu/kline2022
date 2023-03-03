@@ -128,6 +128,8 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
     
     
     # 求解
+    model.setParam("TimeLimit", 100)
+    model.setParam("MIPFocus", 1)
     model.update()
     model.params.LogToConsole = False #NOTE: これをTrueにすると，Gurobiの出力がコンソールに出力される
     model.optimize()
@@ -150,15 +152,15 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
         
         # (ブロック: 車種)
         sol = {i: k for i,k in x if isinstance(x[i,k], gp.Var) and  x[i,k].X > 0.5}
-        print("sol (ブロック:車種): ", sol)
+        # print("sol (ブロック:車種): ", sol)
 
         # 有向辺の集合 (LP)
         sola = {(i,k) for i,k in alpha if isinstance(alpha[i,k], gp.Var) and  alpha[i,k].X > 0.5}
-        print("sol a: ", sola)
+        # print("sol a: ", sola)
         
         # 有向辺の集合（DP）
         solb = {(i,k) for i,k in beta if isinstance(beta[i,k], gp.Var) and  beta[i,k].X > 0.5}
-        print("sol b: ", solb)
+        # print("sol b: ", solb)
     else:
         print("Tree model is infeasible")
         print("input information --------------------")
