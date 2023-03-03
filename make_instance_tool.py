@@ -12,18 +12,34 @@ def get_ramp_block(a, b):
     return enter_block, exit_block
 
 
+def split_total_car_area(total_area, m):
+    theta_list = [0]
+    
+    # total_areaをm個の区間に分割し、m-1個の区切りをランダムに選択する
+    for k in range(m-1):
+        theta_list.append(random.randint(total_area*k/m, total_area*(k+1)/m))
+    theta_list.append(total_area)
+    
+    return theta_list
+
+
 def generate_car(m, total_amount, port_list):
     car_info_list = []
-    
-    for _ in range(m):
+    theta_list = split_total_car_area(total_amount, m)
+
+    for k in range(m):
         # LPは前半の半分から、DPは後半の半分からランダムに選択する
         lp = random.choice(port_list[:math.floor(len(port_list)/2)])
         dp = random.choice(port_list[math.floor(len(port_list)/2):])
             
-        amount = math.floor(total_amount / m) # TODO:今は全ての車種が同じ台数であるが、車種によって可変にする 
+        # amount = math.floor(total_amount / m) # 一様に分配
+        # car_info_list.append((lp, dp, amount))
         
-        car_info_list.append((lp, dp, amount))
-        
+        car_area = theta_list[k+1] - theta_list[k] # 乱数で分配
+        car_info_list.append((lp, dp, car_area))
+    
+    print("car_info_list: ", car_info_list)
+    
     return car_info_list
 
 

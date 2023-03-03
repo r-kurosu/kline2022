@@ -11,7 +11,7 @@ def input_data(input_a, input_b, input_m, input_total_amount):
     V_p = [i for i in range(input_a * input_b)]
     enter_block, exit_block = make_instance_tool.get_ramp_block(input_a, input_b)
     V = [i for i in V_p if i != enter_block and i != exit_block]
-    q = [input_total_amount // (input_a * input_b -2) + 1 for _ in range(input_a * input_b)]
+    q = [math.ceil(input_total_amount / (input_a * input_b -2)) for _ in range(input_a * input_b)]
     q[enter_block] = 0
     q[exit_block] = 1
     # print(q)
