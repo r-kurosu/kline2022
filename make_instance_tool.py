@@ -38,7 +38,7 @@ def generate_car(m, total_amount, port_list):
         car_area = theta_list[k+1] - theta_list[k] # 乱数で分配
         car_info_list.append((lp, dp, car_area))
     
-    print("car_info_list: ", car_info_list)
+    # print("car_info_list: ", car_info_list)
     
     return car_info_list
 

@@ -5,6 +5,20 @@ import make_instance_tool
 import new_visualize_tool
 import MASTER
 
+def get_block_direction(EdgeList, input_b):
+    a = {(i,j): 0 for (i,j) in EdgeList}
+    
+    for edge in EdgeList:
+        if edge[1] - edge[0] == 1 or edge[1] - edge[0] == -1:
+            a[edge] = 1
+        elif edge[1] - edge[0] == input_b or edge[1] - edge[0] == -input_b:
+            a[edge] = 0
+        else:
+            print("error")
+            sys.exit()
+    
+    return a
+
 
 def input_data(input_a, input_b, input_m, input_total_amount):
     # ブロック
@@ -36,13 +50,14 @@ def input_data(input_a, input_b, input_m, input_total_amount):
     E = make_instance_tool.generate_block(input_a, input_b)
     E_bar = [(j,i) for (i,j) in E]
     
-    # a
-    a = [] #TODO: ここでaを作成する
+    # 辺の方向
+    a = get_block_direction(E, input_b)
+    a_bar = get_block_direction(E_bar, input_b)
     
-    return V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a
+    return V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar
 
 
-def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a):
+def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar):
     model = gp.Model('tree_model')
     
     # 変数定義
@@ -55,8 +70,6 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
     x.update({(exit_block, k): 0 for k in M})
     x.update({(i,len(M)): 0 for i in V})
     x[exit_block, len(M)] = 1
-    
-    # 目的関数
 
     # 制約条件
     # 制約34
@@ -98,8 +111,6 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
         # 変数定義
         mu = [model.addVar(vtype = gp.GRB.CONTINUOUS, name = f"mu_{i}") for i in V_p]
         nu = [model.addVar(vtype = gp.GRB.CONTINUOUS, name = f"nu_{i}") for i in V_p]
-        # mu = [model.addVar(vtype = gp.GRB.CONTINUOUS, lb=0, ub=len(V_p), name = f"mu_{i}") for i in V_p]
-        # nu = [model.addVar(vtype = gp.GRB.CONTINUOUS, lb=0, ub=len(V_p), name = f"nu_{i}") for i in V_p]
         mu[enter_block] = 0
         nu[enter_block] = 0
         # 制約条件
@@ -115,18 +126,22 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
             if i != enter_block:
                 model.addConstr(nu[i] >= nu[j] + 1 - len(V_p) + len(V_p)*beta[i,j], name=f"potential_nu_{i}_{j}")
 
-    if MASTER.next_block_flag == 1:
-        # Next block model （隣接するブロックに配置する車種を同じにする）
-        z = {(i, j, k) : model.addVar(vtype = gp.GRB.BINARY, name = f"z_{i}_{j}_{k}") for i in V_p for j in V_p for k in M}
-        for i in V:
-            N_i = make_instance_tool.make_Next_block_list(i)
-            for j in N_i:
-                for k in M:
-                    model.addConstr(-z[i,j,k] <= x[i,k] - x[j,k], name=f"constr_l_{i}_{j}_{k}")
-                    model.addConstr(z[i,j,k] >= x[i,k] - x[j,k], name=f"constr_r_{i}_{j}_{k}")
-        
-        model.setObjective(gp.quicksum(z[i,j,k] for i in V_p for j in V_p for k in M), sense=gp.GRB.MINIMIZE)
+    # if MASTER.next_block_flag == 1:
+    # Next block model （隣接するブロックに配置する車種を同じにする）
+    z = {(i, j, k) : model.addVar(vtype = gp.GRB.BINARY, name = f"z_{i}_{j}_{k}") for i in V_p for j in V_p for k in M}
+    for i in V:
+        N_i = make_instance_tool.make_Next_block_list(i)
+        for j in N_i:
+            for k in M:
+                model.addConstr(-z[i,j,k] <= x[i,k] - x[j,k], name=f"constr_l_{i}_{j}_{k}")
+                model.addConstr(z[i,j,k] >= x[i,k] - x[j,k], name=f"constr_r_{i}_{j}_{k}")
     
+    # 目的関数
+    model.setObjective(
+        - MASTER.w2*(gp.quicksum(a[edge]*alpha[edge] for edge in E) + gp.quicksum(a_bar[edge]*beta[edge] for edge in E_bar))
+        + MASTER.w5*gp.quicksum(z[i,j,k] for i in V_p for j in V_p for k in M), 
+        sense=gp.GRB.MINIMIZE)
+
     
     # 求解
     model.setParam("TimeLimit", MASTER.TIME_LIMIT)
@@ -138,6 +153,7 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
 
     if model.status != gp.GRB.INFEASIBLE:
         print("Tree model is solved!!!")
+        print("Optimal value: ", model.objVal)
         
         # input情報
         print("input information --------------------")
@@ -184,8 +200,8 @@ def main():
     input_m = MASTER.input_m
     input_total_amount = MASTER.input_total_amount
     
-    V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a = input_data(input_a, input_b, input_m, input_total_amount)
-    sol, sola, solb = solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a)
+    V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar = input_data(input_a, input_b, input_m, input_total_amount)
+    sol, sola, solb = solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar)
     
     if sol is not None:
         new_visualize_tool.visualize_solution(sol, sola, solb, input_a, input_b, len(M), o, d, "new_tree_model")
