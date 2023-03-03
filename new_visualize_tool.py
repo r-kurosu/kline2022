@@ -54,7 +54,11 @@ def paint_cell(a, b, sol, ws, m):
                 ws.cell(row=2*i+1, column=2*j+1).fill = color_list[sol[i*b+j]]
     
     # dummy car
-    ws.cell(row=2*(exit_block//b)+1, column=2*(exit_block%b)+1).fill = color_list[m]
+    try:
+        ws.cell(row=2*(exit_block//b)+1, column=2*(exit_block%b)+1).fill = color_list[m]
+    except:
+        print("車種が多すぎます. カラーを追加してください")
+        return ws
     
     return ws
 
@@ -139,6 +143,8 @@ def add_annotation(ws, a, b, m, LP_list, DP_list):
         ws.cell(row=i+2, column=2*b+2).alignment = center_alignment
     
     # dummy car
+    if m >= len(color_list):
+        return ws
     ws.cell(row=m+2, column=2*b+1).value = f"dummy car"
     ws.cell(row=m+2, column=2*b+1).fill = color_list[m]
     ws.cell(row=m+2, column=2*b+1).alignment = center_alignment
