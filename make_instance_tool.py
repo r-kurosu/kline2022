@@ -17,7 +17,7 @@ def split_total_car_area(total_area, m):
     
     # total_areaをm個の区間に分割し、m-1個の区切りをランダムに選択する
     for k in range(m-1):
-        theta_list.append(random.randint(total_area*k/m, total_area*(k+1)/m))
+        theta_list.append(random.randint(int(total_area*k/m), int(total_area*(k+1)/m)))
     theta_list.append(total_area)
     
     return theta_list
