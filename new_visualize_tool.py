@@ -16,8 +16,13 @@ rime_fill = excel.styles.PatternFill(patternType='solid', fgColor='FAEBD7')
 gray_fill = excel.styles.PatternFill(patternType='solid', fgColor='808080')
 purple_fill = excel.styles.PatternFill(patternType='solid', fgColor='800080')
 orange_fill = excel.styles.PatternFill(patternType='solid', fgColor='FFA500')
+yellow_green_fill = excel.styles.PatternFill(patternType='solid', fgColor='9ACD32')
+pink_gold_fill = excel.styles.PatternFill(patternType='solid', fgColor='FFD700')
+wine_red_fill = excel.styles.PatternFill(patternType='solid', fgColor='800000')
+marine_blue_fill = excel.styles.PatternFill(patternType='solid', fgColor='000080')
+passion_pink_fill = excel.styles.PatternFill(patternType='solid', fgColor='FF1493')
 
-color_list = [yellow_fill, red_fill, blue_fill, green_fill, pink_fill, skyblue_fill, rime_fill, gray_fill, purple_fill, orange_fill]
+color_list = [yellow_fill, red_fill, blue_fill, green_fill, pink_fill, skyblue_fill, rime_fill, gray_fill, purple_fill, orange_fill, yellow_green_fill, pink_gold_fill, wine_red_fill, marine_blue_fill, passion_pink_fill]
 
 block_border = Border(top=Side(style='thin', color='000000'), 
                 bottom=Side(style='thin', color='000000'), 
@@ -34,7 +39,7 @@ red_font = excel.styles.fonts.Font(color='FF0000')
 brue_font = excel.styles.fonts.Font(color='0000FF')
 
 
-def paint_cell(a, b, sol, ws):
+def paint_cell(a, b, sol, ws, m):
     enter_block, exit_block = make_instance_tool.get_ramp_block(a, b)
     
     for i in range(a):
@@ -47,17 +52,16 @@ def paint_cell(a, b, sol, ws):
                 continue
             else:
                 ws.cell(row=2*i+1, column=2*j+1).fill = color_list[sol[i*b+j]]
-            
+    
+    # dummy car
+    ws.cell(row=2*(exit_block//b)+1, column=2*(exit_block%b)+1).fill = color_list[m]
+    
     return ws
 
 
 def point_enter_cell(a, b, in_out_flag, ws):
     enter_block, exit_block = make_instance_tool.get_ramp_block(a, b)
-    
-    if in_out_flag == "in":
-        ws.cell(row=2*(enter_block//b)+1, column=2*(enter_block%b)+1).border = ramp_border
-    elif in_out_flag == "out":
-        ws.cell(row=2*(exit_block//b)+1, column=2*(exit_block%b)+1).border = ramp_border
+    ws.cell(row=2*(enter_block//b)+1, column=2*(enter_block%b)+1).border = ramp_border
     
     return ws
 
@@ -121,7 +125,6 @@ def print_edge_out(a, b, solb, ws):
     return
 
 
-
 def add_annotation(ws, a, b, m, LP_list, DP_list):
     ws.cell(row=1, column=2*b+1).value = f"car"
     ws.cell(row=1, column=2*b+1).alignment = center_alignment
@@ -166,7 +169,7 @@ def visualize_solution(sol, sola, solb, a, b, m, LP_list, DP_list, model_name: s
     # 積み込み時の情報
     ws = wb.active
     ws.title = "積み込み"
-    ws = paint_cell(a, b, sol, ws)
+    ws = paint_cell(a, b, sol, ws, m)
     print_edge_in(a, b, sola, ws)
     add_annotation(ws, a, b, m, LP_list, DP_list)
     point_enter_cell(a,b,"in",ws)
@@ -175,7 +178,7 @@ def visualize_solution(sol, sola, solb, a, b, m, LP_list, DP_list, model_name: s
     # 搬出時の情報
     wb.create_sheet(title="搬出")
     ws = wb["搬出"]
-    ws = paint_cell(a, b, sol, ws)
+    ws = paint_cell(a, b, sol, ws, m)
     print_edge_out(a, b, solb, ws)
     add_annotation(ws, a, b, m, LP_list, DP_list)
     point_enter_cell(a,b,"out",ws)
