@@ -128,14 +128,14 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
     
     
     # 求解
-    model.setParam("TimeLimit", 100)
+    model.setParam("TimeLimit", MASTER.TIME_LIMIT)
     model.setParam("MIPFocus", 1)
     model.update()
     model.params.LogToConsole = False #NOTE: これをTrueにすると，Gurobiの出力がコンソールに出力される
     model.optimize()
 
 
-    if model.status == gp.GRB.OPTIMAL:
+    if model.status != gp.GRB.INFEASIBLE:
         print("Tree model is solved!!!")
         
         # input情報
