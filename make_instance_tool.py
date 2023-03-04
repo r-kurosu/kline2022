@@ -77,6 +77,56 @@ def generate_block(a, b):
     return edge_list
 
 
+def set_hold():
+    a, b = MASTER.input_a, MASTER.input_b
+    enter_block, exit_block = get_ramp_block(a, b)
+    H1, H2, H3, H4 = [], [], [], []
+    
+    for i in range(a*b):
+        if i == enter_block or i == exit_block:
+            continue
+        temp = i % b
+        if temp <= round(b/4):
+            H1.append(i)
+        elif temp <= round(b/2):
+            H2.append(i)
+        elif temp <= round(b*3/4):
+            H3.append(i)
+        else:
+            H4.append(i)
+    
+    Hold_List = [H1, H2, H3, H4]
+    
+    return Hold_List
+
+
+def get_sekiwari_results(M: list):
+    C1, C2, C3, C4 = [], [], [], []
+    
+    # ホールドh(1,2,3,4)に対して配置できない車種をランダムに選択する
+    C1.append(random.choice(M))
+    C2.append(random.choice(M))
+    C3.append(random.choice(M))
+    C4.append(random.choice(M))
+    Penalty_Car_List = [C1, C2, C3, C4]
+    
+    # 各車種に対して配置できるホールドをリストに格納する
+    Sekiwari_Results = []
+    for k in range(len(M)):
+        temp_Results = []
+        if M[k] not in C1:
+            temp_Results.append(1)
+        if M[k] not in C2:
+            temp_Results.append(2)
+        if M[k] not in C3:
+            temp_Results.append(3)
+        if M[k] not in C4:
+            temp_Results.append(4)
+        Sekiwari_Results.append(temp_Results)
+        
+    return Penalty_Car_List, Sekiwari_Results
+
+
 def make_Next_block_list(i):
     a, b = MASTER.input_a, MASTER.input_b
     Next_block_list = []
