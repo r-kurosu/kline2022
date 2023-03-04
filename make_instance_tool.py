@@ -7,7 +7,7 @@ print("random seed: ", MASTER.random_seed)
 
 def get_ramp_block(a, b):
     enter_block = math.floor(b/2)
-    exit_block = enter_block + 1 
+    exit_block = MASTER.ramp_block_to_upper_floor
 
     return enter_block, exit_block
 
