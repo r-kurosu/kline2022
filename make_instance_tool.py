@@ -56,30 +56,36 @@ def generate_dummy_car(port_list):
 
 
 def generate_block(a, b):    
-    edge_list = []
+    E = []
     
     # 一旦全ての枝を作成
     for i in range(a):
         for j in range(b-1):
-            edge_list.append((i*b+j, i*b+j+1))
-            edge_list.append((i*b+j+1, i*b+j))
+            E.append((i*b+j, i*b+j+1))
+            E.append((i*b+j+1, i*b+j))
     
     for i in range(a-1):
         for j in range(b):
-            edge_list.append((i*b+j, i*b+j+b))
-            edge_list.append((i*b+j+b, i*b+j))
+            E.append((i*b+j, i*b+j+b))
+            E.append((i*b+j+b, i*b+j))
     
     # 入口0への枝と、出口n+1からの枝を削除する
     enter_block, exit_block = get_ramp_block(a, b)
-    
-    for edge in edge_list:
+    for edge in E:
         if edge[1] == enter_block:
-            edge_list = [e for e in edge_list if e != edge]
+            E = [e for e in E if e != edge]
             
         if edge[0] == exit_block:
-            edge_list = [e for e in edge_list if e != edge]
+            E = [e for e in E if e != edge]
     
-    return edge_list
+    # # 入口からの枝を1方向に限定（右のみ）
+    if MASTER.limit_ramp_branch_model == 1:
+        for edge in E:
+            if edge[0] == enter_block:
+                if edge[1] != enter_block + 1:
+                    E = [e for e in E if e != edge]
+    
+    return E
 
 
 def set_hold():

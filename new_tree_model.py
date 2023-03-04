@@ -20,6 +20,22 @@ def get_block_direction(EdgeList, input_b):
     return a
 
 
+def fix_block_area(q):
+    a, b = MASTER.input_a, MASTER.input_b
+    
+    # 1. 左下の面積を0にする
+    q[(a-1)*b] = 0
+    
+    # 2. 左上・右上・右下の面積を半分にする
+    q[0] = q[0] / 2
+    q[b-1] = q[b-1] / 2
+    q[a*b-1] = q[a*b-1] / 2
+    
+    # 3. TODO: 他のブロックの面積を調整する
+    
+    return q
+
+
 def input_data(input_a, input_b, input_m, input_total_amount):
     # ブロック
     V_p = [i for i in range(input_a * input_b)]
@@ -29,6 +45,7 @@ def input_data(input_a, input_b, input_m, input_total_amount):
     q = [(input_total_amount + MASTER.gap_area) / (input_a * input_b -2) for _ in range(input_a * input_b)]
     q[enter_block] = 0
     q[exit_block] = 1
+    q = fix_block_area(q)
     # print(q)
     
     # 車の情報
@@ -157,7 +174,7 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
     model.setParam("TimeLimit", MASTER.TIME_LIMIT)
     model.setParam("MIPFocus", 1)
     model.update()
-    model.params.LogToConsole = False #NOTE: これをTrueにすると，Gurobiの出力がコンソールに出力される
+    # model.params.LogToConsole = False #NOTE: これをTrueにすると，Gurobiの出力がコンソールに出力される
     model.optimize()
 
 
