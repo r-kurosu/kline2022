@@ -26,12 +26,17 @@ def split_total_car_area(total_area, m):
 def generate_car(m, total_amount, port_list):
     car_info_list = []
     theta_list = split_total_car_area(total_amount, m)
-
+    Port_Pair_flag = {(l,d): 0 for l in range(len(port_list)) for d in range(len(port_list))}
+    
     for k in range(m):
         # LPは前半の半分から、DPは後半の半分からランダムに選択する
         lp = random.choice(port_list[:math.floor(len(port_list)/2)])
         dp = random.choice(port_list[math.floor(len(port_list)/2):])
-            
+        while Port_Pair_flag[lp,dp] == 0:
+            lp = random.choice(port_list[:math.floor(len(port_list)/2)])
+            dp = random.choice(port_list[math.floor(len(port_list)/2):])
+        Port_Pair_flag[lp,dp] = 1
+        
         # amount = math.floor(total_amount / m) # 一様に分配
         # car_info_list.append((lp, dp, amount))
         
