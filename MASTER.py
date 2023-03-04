@@ -28,4 +28,4 @@ random_seed = 7 #1~100: fixed seed
 potential_flag = 1 #0: no potential, 1: with potential
 next_block_flag = 1 #0: no block, 1: with block
 
-limit_ramp_branch_model = 0 #0: no limit, 1: limit (入り口ランプに対する枝の方向を一つに固定)
+limit_ramp_branch_model = 1 #0: no limit, 1: limit (入り口ランプに対する枝の方向を一つに固定)

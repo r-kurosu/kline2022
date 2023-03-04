@@ -32,7 +32,7 @@ def generate_car(m, total_amount, port_list):
         # LPは前半の半分から、DPは後半の半分からランダムに選択する
         lp = random.choice(port_list[:math.floor(len(port_list)/2)])
         dp = random.choice(port_list[math.floor(len(port_list)/2):])
-        while Port_Pair_flag[lp,dp] == 0:
+        while Port_Pair_flag[lp,dp] == 1:
             lp = random.choice(port_list[:math.floor(len(port_list)/2)])
             dp = random.choice(port_list[math.floor(len(port_list)/2):])
         Port_Pair_flag[lp,dp] = 1
