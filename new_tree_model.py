@@ -232,7 +232,7 @@ def main():
     sol, sola, solb = solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar)
     
     if sol is not None:
-        new_visualize_tool.visualize_solution(sol, sola, solb, input_a, input_b, len(M), o, d, "new_tree_model")
+        new_visualize_tool.visualize_solution(sol, sola, solb, input_a, input_b, len(M), o, d, p)
     end_time = time.time()
     print(f"calculation time: {end_time - begin_time} sec")
     

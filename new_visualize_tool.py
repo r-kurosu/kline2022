@@ -129,11 +129,13 @@ def print_edge_out(a, b, solb, ws):
     return
 
 
-def add_annotation(ws, a, b, m, LP_list, DP_list):
+def add_annotation(ws, a, b, m, LP_list, DP_list, Amount_list):
     ws.cell(row=1, column=2*b+1).value = f"car"
     ws.cell(row=1, column=2*b+1).alignment = center_alignment
     ws.cell(row=1, column=2*b+2).value = f"LP → DP"
     ws.cell(row=1, column=2*b+2).alignment = center_alignment
+    ws.cell(row=1, column=2*b+3).value = f"car amount (RT)"
+    ws.cell(row=1, column=2*b+3).alignment = center_alignment
     
     for i in range(m):
         ws.cell(row=i+2, column=2*b+1).value = f"car {i}"
@@ -141,6 +143,7 @@ def add_annotation(ws, a, b, m, LP_list, DP_list):
         ws.cell(row=i+2, column=2*b+1).alignment = center_alignment
         ws.cell(row=i+2, column=2*b+2).value = f"{LP_list[i]} → {DP_list[i]}"
         ws.cell(row=i+2, column=2*b+2).alignment = center_alignment
+        ws.cell(row=i+2, column=2*b+3).value = f"{Amount_list[i]} (RT)"
     
     # dummy car
     if m >= len(color_list):
@@ -169,7 +172,7 @@ def fit_cell_size(ws, a, b):
     return
 
 
-def visualize_solution(sol, sola, solb, a, b, m, LP_list, DP_list, model_name: str):
+def visualize_solution(sol, sola, solb, a, b, m, LP_list, DP_list, Amount_list):
     wb = excel.Workbook()
     
     # 積み込み時の情報
@@ -177,7 +180,7 @@ def visualize_solution(sol, sola, solb, a, b, m, LP_list, DP_list, model_name: s
     ws.title = "積み込み"
     ws = paint_cell(a, b, sol, ws, m)
     print_edge_in(a, b, sola, ws)
-    add_annotation(ws, a, b, m, LP_list, DP_list)
+    add_annotation(ws, a, b, m, LP_list, DP_list, Amount_list)
     point_enter_cell(a,b,"in",ws)
     fit_cell_size(ws, a, b)
     
@@ -186,7 +189,7 @@ def visualize_solution(sol, sola, solb, a, b, m, LP_list, DP_list, model_name: s
     ws = wb["搬出"]
     ws = paint_cell(a, b, sol, ws, m)
     print_edge_out(a, b, solb, ws)
-    add_annotation(ws, a, b, m, LP_list, DP_list)
+    add_annotation(ws, a, b, m, LP_list, DP_list, Amount_list)
     point_enter_cell(a,b,"out",ws)
     fit_cell_size(ws, a, b)
     
