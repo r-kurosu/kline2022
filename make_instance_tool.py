@@ -78,11 +78,14 @@ def generate_block(a, b):
         if edge[0] == exit_block:
             E = [e for e in E if e != edge]
     
-    # # 入口からの枝を1方向に限定（右のみ）
+    ## 出入口からの枝を1方向に限定（右のみ）
     if MASTER.limit_ramp_branch_model == 1:
         for edge in E:
             if edge[0] == enter_block:
                 if edge[1] != enter_block + 1:
+                    E = [e for e in E if e != edge]
+            elif edge[1] == exit_block:
+                if edge[0] != exit_block - 1:
                     E = [e for e in E if e != edge]
     
     return E
