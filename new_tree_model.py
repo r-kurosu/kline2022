@@ -139,7 +139,18 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
             j = edge[1]
             if i != enter_block:
                 model.addConstr(nu[i] >= nu[j] + 1 - len(V_p) + len(V_p)*beta[i,j], name=f"potential_nu_{i}_{j}")
-
+    
+    # （ペナルティ1）出る向きと入る向きを同じにする
+    y = {(i) : model.addVar(vtype = gp.GRB.BINARY, name = f"y_{i}") for i in V}
+    for i in V:
+        N_i = make_instance_tool.make_Next_block_list(i)
+        model.addConstr(-y[i] <= gp.quicksum(a[j,i]*alpha[j,i] for j in N_i) - gp.quicksum(a_bar[i,j]*beta[i,j] for j in N_i), name=f"constr_l_{i}_{j}_{k}")
+        model.addConstr(y[i] >= gp.quicksum(a[j,i]*alpha[j,i] for j in N_i) - gp.quicksum(a_bar[i,j]*beta[i,j] for j in N_i), name=f"constr_r_{i}_{j}_{k}")
+    
+    # （ペナルティ4）席割りの結果を考慮する
+    Hold_List = make_instance_tool.set_hold()
+    Penalty_Car_list, Sekiwari_Results = make_instance_tool.get_sekiwari_results(M)
+    
     # if MASTER.next_block_flag == 1:
     # （ペナルティ5）隣接するブロックに配置する車種を同じにする
     z = {(i, j, k) : model.addVar(vtype = gp.GRB.BINARY, name = f"z_{i}_{j}_{k}") for i in V_p for j in V_p for k in M}
@@ -150,16 +161,6 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
                 model.addConstr(-z[i,j,k] <= x[i,k] - x[j,k], name=f"constr_l_{i}_{j}_{k}")
                 model.addConstr(z[i,j,k] >= x[i,k] - x[j,k], name=f"constr_r_{i}_{j}_{k}")
     
-    # （ペナルティ1）出る向きと入る向きを同じにする
-    y = {(i) : model.addVar(vtype = gp.GRB.BINARY, name = f"y_{i}") for i in V}
-    for i in V:
-        N_i = make_instance_tool.make_Next_block_list(i)
-        model.addConstr(-y[i] <= gp.quicksum(a[j,i]*alpha[j,i] for j in N_i), name=f"constr_l_{i}_{j}_{k}")
-        model.addConstr(y[i] >= gp.quicksum(a[j,i]*alpha[j,i] for j in N_i), name=f"constr_r_{i}_{j}_{k}")
-    
-    # （ペナルティ4）席割りの結果を考慮する
-    Hold_List = make_instance_tool.set_hold()
-    Penalty_Car_list, Sekiwari_Results = make_instance_tool.get_sekiwari_results(M)
                     
     # 目的関数
     model.setObjective(
