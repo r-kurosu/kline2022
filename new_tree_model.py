@@ -160,11 +160,11 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
     # （ペナルティ4）席割りの結果を考慮する
     Hold_List = make_instance_tool.set_hold()
     Penalty_Car_list, Sekiwari_Results = make_instance_tool.get_sekiwari_results(M)
-    
+                    
     # 目的関数
     model.setObjective(
         + MASTER.w1*gp.quicksum(y[i] for i in V)
-        - MASTER.w2*(gp.quicksum(a[edge]*alpha[edge] for edge in E) + gp.quicksum(a_bar[edge]*beta[edge] for edge in E_bar))
+        - MASTER.w2*(gp.quicksum(a_bar[edge]*beta[edge] for edge in E_bar))
         + MASTER.w4*gp.quicksum(gp.quicksum(x[i,k] for i in Hold_List[h] for k in Penalty_Car_list[h]) for h in range(4))
         + MASTER.w5*gp.quicksum(z[i,j,k] for i in V_p for j in V_p for k in M), 
         sense=gp.GRB.MINIMIZE)
