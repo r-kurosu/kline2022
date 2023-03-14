@@ -141,6 +141,16 @@ def get_sekiwari_results(M: list):
     return Penalty_Car_List, Sekiwari_Results
 
 
+def get_detailed_sekiwari_results(M: list, p: list):
+    r = [[0 for i in range(4)] for j in range(len(M))]
+    
+    for k in range(len(M)):
+        for h in range(4):
+            r[k][h] = p[k]/4 # 一旦全てのホールドに同じ割合で配置する
+    
+    return r
+
+
 def make_Next_block_list(i):
     a, b = MASTER.input_a, MASTER.input_b
     Next_block_list = []
