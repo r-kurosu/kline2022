@@ -42,7 +42,7 @@ def generate_car(m, total_amount, port_list):
         
         car_area = theta_list[k+1] - theta_list[k] # 乱数で分配
         car_info_list.append((lp, dp, car_area))
-    
+
     # print("car_info_list: ", car_info_list)
     
     return car_info_list
@@ -139,6 +139,16 @@ def get_sekiwari_results(M: list):
         Sekiwari_Results.append(temp_Results)
         
     return Penalty_Car_List, Sekiwari_Results
+
+
+def get_detailed_sekiwari_results(M: list, p: list):
+    r = [[0 for i in range(4)] for j in range(len(M))]
+    
+    for k in range(len(M)):
+        for h in range(4):
+            r[k][h] = p[k]/4 # 一旦全てのホールドに同じ割合で配置する
+    
+    return r
 
 
 def make_Next_block_list(i):
