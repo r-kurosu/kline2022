@@ -192,6 +192,12 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
     if model.status != gp.GRB.INFEASIBLE:
         print("Tree model is solved!!!")
         print("Optimal value: ", model.objVal)
+        print("status:", model.status)
+        # staus: {1: 'LOADED', 2: 'OPTIMAL', 3: 'INFEASIBLE', 4: 'INF_OR_UNBD', 5: 'UNBOUNDED', 6: 'CUTOFF', 7: 'ITERATION_LIMIT', 8: 'NODE_LIMIT', 9: 'TIME_LIMIT', 10: 'SOLUTION_LIMIT', 11: 'INTERRUPTED', 12: 'NUMERIC', 13: 'SUBOPTIMAL', 14: 'INPROGRESS', 15: 'USER_OBJ_LIMIT'}
+        if model.objVal >= 10**10:
+            print("Not infeasble but No feasible solution has been founded!")
+            print("Need more time!")
+            return None, None, None
         
         # input情報
         print("input information --------------------")
