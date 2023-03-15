@@ -167,7 +167,7 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
     for h in range(4):
         for k in M:
             model.addConstr(y6[h,k] >= 0, name=f"constr6_l_{h}_{k}")
-            model.addConstr(y6[h,k] >= r[k][h] - gp.quicksum(x[i,k]*q[i] for i in Hold_List[h]), name=f"constr6_r_{h}_{k}")
+            model.addConstr(y6[h,k] >= gp.quicksum(x[i,k]*q[i] for i in Hold_List[h]) - r[k][h], name=f"constr6_r_{h}_{k}")
             
     # （ペナルティ7）入庫と出庫の複雑さに関するペナルティ（改良版）
                     

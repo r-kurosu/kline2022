@@ -1,7 +1,7 @@
 # input parameters
 input_a = 4
 input_b = 16
-input_m = 6 # 車の数
+input_m = 5 # 車の数
 input_total_amount = 500 # 車の総面積 (各車種の面積はランダム)
 
 ramp_block_to_upper_floor = 56 # 上のデッキにいくブロックの番号 (0〜a*b-1)
@@ -12,7 +12,7 @@ PORT_list = [i for i in range(input_port_num)]
 
 gap_area = 100 # ブロック容量に対するギャップ面積（0は車の総面積＝ブロックの総キャパシティ）
 
-TIME_LIMIT = 15
+TIME_LIMIT = 60
 
 # set weight (0はペナルティなし)
 w1 = 1 # 各ブロックに入る向きと出る向きに関するペナルティ
