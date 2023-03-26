@@ -1,3 +1,4 @@
+import time, datetime
 import openpyxl as excel
 from openpyxl.styles.borders import Border, Side
 from openpyxl.styles import Alignment
@@ -202,7 +203,10 @@ def visualize_solution(sol, sola, solb, a, b, m, LP_list, DP_list, Amount_list):
     if MASTER.next_block_flag == 1:
         model_name += "_NextBlock"
 
-    wb.save(f"{model_name}.xlsx")
+    # wb.save(f"{model_name}.xlsx")
+    now_time = datetime.datetime.now()
+    now_time_str = now_time.strftime("%Y%m%d_%H%M%S")
+    wb.save(f"results/results_{now_time_str}.xlsx")
     
     return
 

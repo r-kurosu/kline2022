@@ -170,14 +170,24 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
             model.addConstr(y6[h,k] >= gp.quicksum(x[i,k]*q[i] for i in Hold_List[h]) - r[k][h], name=f"constr6_r_{h}_{k}")
             
     # （ペナルティ7）入庫と出庫の複雑さに関するペナルティ（改良版）
-                    
+    y7_in = {(i) : model.addVar(vtype = gp.GRB.BINARY, name = f"y7in_{i}") for i in V}
+    y7_out = {(i) : model.addVar(vtype = gp.GRB.BINARY, name = f"y7out_{i}") for i in V}
+    for i in V:
+        N_i = make_instance_tool.make_Next_block_list(i)
+        model.addConstr(-y7_in[i] <= gp.quicksum(a[j,i]*alpha[j,i] for j in N_i) - gp.quicksum(a[i,j]*alpha[i,j] for j in N_i), name=f"constr_p7_ll_{i}_{j}_{k}")
+        model.addConstr(y7_in[i] >= gp.quicksum(a[j,i]*alpha[j,i] for j in N_i) - gp.quicksum(a[i,j]*alpha[i,j] for j in N_i), name=f"constr_p7_lr_{i}_{j}_{k}")
+        
+        model.addConstr(-y7_out[i] <= gp.quicksum(a_bar[j,i]*beta[j,i] for j in N_i) - gp.quicksum(a_bar[i,j]*beta[i,j] for j in N_i), name=f"constr_p7_rl_{i}_{j}_{k}")
+        model.addConstr(y7_out[i] >= gp.quicksum(a_bar[j,i]*beta[j,i] for j in N_i) - gp.quicksum(a_bar[i,j]*beta[i,j] for j in N_i), name=f"constr_p7_rr_{i}_{j}_{k}")
+    
     # 目的関数
     model.setObjective(
         + MASTER.w1*gp.quicksum(y[i] for i in V)
         - MASTER.w2*(gp.quicksum(a_bar[edge]*beta[edge] for edge in E_bar))
         + MASTER.w4*gp.quicksum(gp.quicksum(x[i,k] for i in Hold_List[h] for k in Penalty_Car_list[h]) for h in range(4))
         + MASTER.w5*gp.quicksum(z[i,j,k] for i in V_p for j in V_p for k in M)
-        + MASTER.w6*gp.quicksum(y6[h,k] for h in range(4) for k in M),
+        + MASTER.w6*gp.quicksum(y6[h,k] for h in range(4) for k in M)
+        + MASTER.w7*(gp.quicksum(y7_in[i] for i in V) + gp.quicksum(y7_out[i] for i in V)),
         sense=gp.GRB.MINIMIZE)
 
     
