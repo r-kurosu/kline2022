@@ -180,17 +180,20 @@ def make_Next_block_list(i):
 def get_gang_preferences(M):
     M_same = [] # 同じ方向での出入りを好む車種
     M_reverse = [] # 逆方向での出入りを好む車種
+    M_discripttion = []
     
     for i in range(len(M)):
         rand_flag = random.randint(0, 2)
         if rand_flag == 0:
             M_same.append(i)
+            M_discripttion.append("same")
         elif rand_flag == 1:
             M_reverse.append(i)
+            M_discripttion.append("reverse")
         else:
-            pass
+            M_discripttion.append("none")
             
-    return M_same, M_reverse
+    return M_same, M_reverse, M_discripttion
 
 
 def get_delta(i, E):

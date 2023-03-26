@@ -148,7 +148,7 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
         model.addConstr(y[i] >= gp.quicksum(a[j,i]*alpha[j,i] for j in N_i) - gp.quicksum(a_bar[i,j]*beta[i,j] for j in N_i), name=f"constr_r_{i}_{j}_{k}")
     
     # （ペナルティ3) ギャングの好みを考慮する
-    M_same, M_reverse = make_instance_tool.get_gang_preferences(M)
+    M_same, M_reverse, M_description = make_instance_tool.get_gang_preferences(M)
     z3 = {(i) : model.addVar(vtype = gp.GRB.CONTINUOUS, name = f"z3_{i}") for i in V}
     for i in V:
         delta = make_instance_tool.get_delta(i, E)
@@ -227,11 +227,11 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
         print(f"total amount: {sum(p)}")
         print(f"total capacity: {sum(q)}")
         for k in M:
-            print(f"car {k}: LP: {o[k]}, DP: {d[k]}, area: {p[k]}, Hold: {Sekiwari_Results[k]}")
+            print(f"car {k}: LP: {o[k]}, DP: {d[k]}, area: {p[k]}, Hold: {Sekiwari_Results[k]}, gang_pref: {M_description[k]}")
         print(f"dummy car: LP: {o[-1]}, DP: {d[-1]}")
         print(f"number of block: {len(V_p)}")
         print(f"capacity of a block: {q[0]}")
-        
+        print(f"number of car: {len(M)}")
         print("--------------------------------------")
         
         # (ブロック: 車種)
