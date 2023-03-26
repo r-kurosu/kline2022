@@ -175,3 +175,55 @@ def make_Next_block_list(i):
         pass
     
     return Next_block_list
+
+
+def get_gang_preferences(M):
+    M_same = [] # 同じ方向での出入りを好む車種
+    M_reverse = [] # 逆方向での出入りを好む車種
+    
+    for i in range(len(M)):
+        rand_flag = random.randint(0, 2)
+        if rand_flag == 0:
+            M_same.append(i)
+        elif rand_flag == 1:
+            M_reverse.append(i)
+        else:
+            pass
+            
+    return M_same, M_reverse
+
+
+def get_delta(i, E):
+    N_i = make_Next_block_list(i)
+    for j in N_i:
+        if (j, i) in E:
+            continue
+        else:
+            N_i.remove(j)
+            
+    return N_i
+
+def get_sigma(i, j):
+    reverse_block = get_reverse_block(i, j)
+    if reverse_block != None:
+        enter_block, exit_block = get_ramp_block(MASTER.input_a, MASTER.input_b)
+        if reverse_block == enter_block or reverse_block == exit_block:
+            return None
+        return reverse_block
+    
+    return None
+    
+
+def get_reverse_block(i,j):
+    a, b = MASTER.input_a, MASTER.input_b
+    
+    if i == j+1 and i % b != b-1 and i % b != 0:
+        return i+1
+    elif i == j-1 and i % b != 0 and i % b != b-1:
+        return i-1
+    elif i == j+b and i < b*(a-1):
+        return i+b
+    elif i == j-b and i >= b:
+        return i-b
+    else:
+        return None

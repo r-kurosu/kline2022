@@ -147,11 +147,23 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
         model.addConstr(-y[i] <= gp.quicksum(a[j,i]*alpha[j,i] for j in N_i) - gp.quicksum(a_bar[i,j]*beta[i,j] for j in N_i), name=f"constr_l_{i}_{j}_{k}")
         model.addConstr(y[i] >= gp.quicksum(a[j,i]*alpha[j,i] for j in N_i) - gp.quicksum(a_bar[i,j]*beta[i,j] for j in N_i), name=f"constr_r_{i}_{j}_{k}")
     
+    # （ペナルティ3) ギャングの好みを考慮する
+    M_same, M_reverse = make_instance_tool.get_gang_preferences(M)
+    z3 = {(i) : model.addVar(vtype = gp.GRB.CONTINUOUS, name = f"z3_{i}") for i in V}
+    for i in V:
+        delta = make_instance_tool.get_delta(i, E)
+        for j in delta:
+            model.addConstr(alpha[j,i]-beta[i,j] <= 1 + z3[i] - gp.quicksum(x[i,k] for k in M_same), name=f"constr_p3_18_{i}_{j}")
+            model.addConstr(beta[i,j]-alpha[j,i] <= 1 + z3[i] - gp.quicksum(x[i,k] for k in M_same), name=f"constr_p3_19_{i}_{j}")
+            sigma = make_instance_tool.get_sigma(i,j)
+            if sigma is not None:
+                model.addConstr(alpha[j,i]-beta[i,sigma] <= 1 + z3[i] - gp.quicksum(x[i,k] for k in M_reverse), name=f"constr_p3_20_{i}_{j}")
+                model.addConstr(beta[i,sigma]-alpha[j,i] <= 1 + z3[i] - gp.quicksum(x[i,k] for k in M_reverse), name=f"constr_p3_21_{i}_{j}")
+            
     # （ペナルティ4）席割りの結果を考慮する
     Hold_List = make_instance_tool.set_hold()
     Penalty_Car_list, Sekiwari_Results = make_instance_tool.get_sekiwari_results(M)
     
-    # if MASTER.next_block_flag == 1:
     # （ペナルティ5）隣接するブロックに配置する車種を同じにする
     z = {(i, j, k) : model.addVar(vtype = gp.GRB.BINARY, name = f"z_{i}_{j}_{k}") for i in V_p for j in V_p for k in M}
     for i in V:
@@ -184,6 +196,7 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
     model.setObjective(
         + MASTER.w1*gp.quicksum(y[i] for i in V)
         - MASTER.w2*(gp.quicksum(a_bar[edge]*beta[edge] for edge in E_bar))
+        + MASTER.w3*gp.quicksum(z3[i] for i in V)
         + MASTER.w4*gp.quicksum(gp.quicksum(x[i,k] for i in Hold_List[h] for k in Penalty_Car_list[h]) for h in range(4))
         + MASTER.w5*gp.quicksum(z[i,j,k] for i in V_p for j in V_p for k in M)
         + MASTER.w6*gp.quicksum(y6[h,k] for h in range(4) for k in M)
