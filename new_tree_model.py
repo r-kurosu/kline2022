@@ -234,6 +234,17 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
         print(f"number of car: {len(M)}")
         print("--------------------------------------")
         
+        # solution
+        print("solution ------------------------------")
+        print(f"p1: {MASTER.w1*gp.quicksum(y[i].X for i in V)}")
+        print(f"p2: {MASTER.w2*(gp.quicksum(1-a_bar[edge]*beta[edge].X for edge in E_bar))}")
+        print(f"p3: {MASTER.w3*gp.quicksum(z3[i].X for i in V)}")
+        print(f"p4: {MASTER.w4*gp.quicksum(gp.quicksum(x[i,k].X for i in Hold_List[h] for k in Penalty_Car_list[h]) for h in range(4))}")
+        print(f"p5: {MASTER.w5*gp.quicksum(z[i,j,k].X for i in V_p for j in V_p for k in M)}")
+        print(f"p6: {MASTER.w6*gp.quicksum(y6[h,k].X for h in range(4) for k in M)}")
+        print(f"p7: {MASTER.w7*(gp.quicksum(y7_in[i].X for i in V) + gp.quicksum(y7_out[i].X for i in V))}")
+        print("--------------------------------------")
+        
         # (ブロック: 車種)
         sol = {i: k for i,k in x if isinstance(x[i,k], gp.Var) and  x[i,k].X > 0.5}
         # print("sol (ブロック:車種): ", sol)
