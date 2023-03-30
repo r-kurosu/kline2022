@@ -232,6 +232,14 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
         print(f"number of block: {len(V_p)}")
         print(f"capacity of a block: {q[0]}")
         print(f"number of car: {len(M)}")
+        
+        print(f"w1: {MASTER.w1}")
+        print(f"w2: {MASTER.w2}")
+        print(f"w3: {MASTER.w3}")
+        print(f"w4: {MASTER.w4}")
+        print(f"w5: {MASTER.w5}")
+        print(f"w6: {MASTER.w6}")
+        print(f"w7: {MASTER.w7}")
         print("--------------------------------------")
         
         # solution
