@@ -173,7 +173,22 @@ def fit_cell_size(ws, a, b):
     return
 
 
-def visualize_solution(sol, sola, solb, a, b, m, LP_list, DP_list, Amount_list):
+def output_solution_info(ws, penalty_sol):
+    weight_list = [MASTER.w1, MASTER.w2, MASTER.w3, MASTER.w4, MASTER.w5, MASTER.w6, MASTER.w7]
+    
+    for i in range(8):
+        if i == 0:
+            ws.cell(row=i+1, column=2).value = "weight"
+            ws.cell(row=i+1, column=3).value = "solution value"
+            continue
+        ws.cell(row=i+1, column=1).value = f"penalty {i}"
+        ws.cell(row=i+1, column=2).value = weight_list[i-1]
+        ws.cell(row=i+1, column=3).value = penalty_sol[i-1]
+        
+    return
+
+
+def visualize_solution(sol, sola, solb, penalty_sol, a, b, m, LP_list, DP_list, Amount_list):
     wb = excel.Workbook()
     
     # 積み込み時の情報
@@ -194,16 +209,12 @@ def visualize_solution(sol, sola, solb, a, b, m, LP_list, DP_list, Amount_list):
     point_enter_cell(a,b,"out",ws)
     fit_cell_size(ws, a, b)
     
+    # 定性情報
+    wb.create_sheet(title="問題情報")
+    ws = wb["問題情報"]
+    output_solution_info(ws, penalty_sol)
     
-    model_name = "results"
-    if MASTER.potential_flag == 0:
-        model_name += "_Normal"
-    else:
-        model_name += "_Potential"
-    if MASTER.next_block_flag == 1:
-        model_name += "_NextBlock"
-
-    # wb.save(f"{model_name}.xlsx")
+    # 結果の保存
     now_time = datetime.datetime.now()
     now_time_str = now_time.strftime("%Y%m%d_%H%M%S")
     wb.save(f"results/results_{now_time_str}.xlsx")

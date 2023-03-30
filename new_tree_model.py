@@ -244,13 +244,17 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
         
         # solution
         print("solution ------------------------------")
-        print(f"p1: {MASTER.w1*gp.quicksum(y[i].X for i in V)}")
-        print(f"p2: {MASTER.w2*(gp.quicksum(1-a_bar[edge]*beta[edge].X for edge in E_bar))}")
-        print(f"p3: {MASTER.w3*gp.quicksum(z3[i].X for i in V)}")
-        print(f"p4: {MASTER.w4*gp.quicksum(gp.quicksum(x[i,k].X for i in Hold_List[h] for k in Penalty_Car_list[h]) for h in range(4))}")
-        print(f"p5: {MASTER.w5*gp.quicksum(z[i,j,k].X for i in V_p for j in V_p for k in M)}")
-        print(f"p6: {MASTER.w6*gp.quicksum(y6[h,k].X for h in range(4) for k in M)}")
-        print(f"p7: {MASTER.w7*(gp.quicksum(y7_in[i].X for i in V) + gp.quicksum(y7_out[i].X for i in V))}")
+        penalty_sol = [
+            MASTER.w1*sum(y[i].X for i in V),
+            MASTER.w2*sum(1-a_bar[edge]*beta[edge].X for edge in E_bar),
+            MASTER.w3*sum(z3[i].X for i in V),
+            MASTER.w4*sum(sum(x[i,k].X for i in Hold_List[h] for k in Penalty_Car_list[h]) for h in range(4)),
+            MASTER.w5*sum(z[i,j,k].X for i in V_p for j in V_p for k in M),
+            MASTER.w6*sum(y6[h,k].X for h in range(4) for k in M),
+            MASTER.w7*sum(y7_in[i].X for i in V) + sum(y7_out[i].X for i in V)
+        ]
+        for i in range(len(penalty_sol)):
+            print(f"penalty {i}: {penalty_sol[i]}")
         print("--------------------------------------")
         
         # (ブロック: 車種)
@@ -273,9 +277,9 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
             print(f"car {k}: LP: {o[k]}, DP: {d[k]}, area: {p[k]}")
         print(f"number of block: {len(V_p)}")
         print(f"capacity of a block: {q[0]}")
-        return None, None, None
+        return None, None, None, None
         
-    return sol, sola, solb
+    return sol, sola, solb, penalty_sol
 
 
 def main():
@@ -287,10 +291,10 @@ def main():
     input_total_amount = MASTER.input_total_amount
     
     V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar = input_data(input_a, input_b, input_m, input_total_amount)
-    sol, sola, solb = solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar)
+    sol, sola, solb, penalty_sol = solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar)
     
     if sol is not None:
-        new_visualize_tool.visualize_solution(sol, sola, solb, input_a, input_b, len(M), o, d, p)
+        new_visualize_tool.visualize_solution(sol, sola, solb, penalty_sol, input_a, input_b, len(M), o, d, p)
     end_time = time.time()
     print(f"calculation time: {end_time - begin_time} sec")
     
