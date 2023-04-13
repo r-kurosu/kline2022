@@ -230,3 +230,21 @@ def get_reverse_block(i,j):
         return i-b
     else:
         return None
+    
+
+def get_penalty_edges(i, j, E):
+    a, b = MASTER.input_a, MASTER.input_b
+    
+    penalty_edges = []
+    if i == j+1 or i == j-1:
+        if (j, j-b) in E:
+            penalty_edges.append((j, j-b))
+        if (j, j+b) in E:
+            penalty_edges.append((j, j+b))
+    else:
+        if (j, j-1) in E:
+            penalty_edges.append((j, j-1))
+        if (j, j+1) in E:
+            penalty_edges.append((j, j+1))
+    
+    return penalty_edges
