@@ -246,13 +246,13 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
         # solution
         print("solution ------------------------------")
         penalty_sol = [
-            MASTER.w1*sum(y[i].X for i in V),
-            MASTER.w2*sum(1-a_bar[edge]*beta[edge].X for edge in E_bar),
-            MASTER.w3*sum(z3[i].X for i in V),
-            MASTER.w4*sum(sum(x[i,k].X for i in Hold_List[h] for k in Penalty_Car_list[h]) for h in range(4)),
-            MASTER.w5*sum(z[i,j,k].X for i in V_p for j in V_p for k in M),
-            MASTER.w6*sum(y6[h,k].X for h in range(4) for k in M),
-            MASTER.w7*sum(t_a[edge].X for edge in E) + sum(t_b[edge].X for edge in E_bar)
+            sum(y[i].X for i in V),
+            sum(1-a_bar[edge]*beta[edge].X for edge in E_bar),
+            sum(z3[i].X for i in V),
+            sum(sum(x[i,k].X for i in Hold_List[h] for k in Penalty_Car_list[h]) for h in range(4)),
+            sum(z[i,j,k].X for i in V_p for j in V_p for k in M),
+            sum(y6[h,k].X for h in range(4) for k in M),
+            sum(t_a[edge].X for edge in E) + sum(t_b[edge].X for edge in E_bar)
         ]
         for i in range(len(penalty_sol)):
             print(f"penalty {i}: {penalty_sol[i]}")
