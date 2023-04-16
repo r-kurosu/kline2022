@@ -4,7 +4,12 @@ import make_instance_tool
 
 
 def read_dataset():
-    df = pd.read_csv('datasets/BRA_12dk.csv', sep=',')
+    try:
+        df = pd.read_csv(f'datasets/{MASTER.input_property}_{MASTER.input_DK}dk.csv', sep=',')
+    except FileNotFoundError:
+        print('FileNotFoundError: Please check the file name or input dk.')
+        exit()
+        
     print(df)
     input_a = MASTER.input_a
     input_b = MASTER.input_b

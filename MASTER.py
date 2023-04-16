@@ -1,5 +1,8 @@
 # choose data
 USE_REAL_DATA = 1 #0: dummy data, 1: real data
+input_DK = 11
+input_property = "BRA" # {BRA, CHN, IND, JPN, KOR, MEX, PHL, THA, USA}
+
 
 # input parameters
 input_a = 4
@@ -33,6 +36,3 @@ random_seed = 7 #1~100: fixed seed
 # choose model
 potential_flag = 1 #0: no potential, 1: with potential
 limit_ramp_branch_model = 1 #0: no limit, 1: limit (入り口ランプに対する枝の方向を一つに固定)
-
-# choose data
-USE_REAL_DATA = 1 #0: dummy data, 1: real data
