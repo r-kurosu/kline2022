@@ -3,21 +3,9 @@ import sys
 import random, math, time
 import make_instance_tool
 import new_visualize_tool
+import read_real_dataset
 import MASTER
 
-def get_block_direction(EdgeList, input_b):
-    a = {(i,j): 0 for (i,j) in EdgeList}
-    
-    for edge in EdgeList:
-        if edge[1] - edge[0] == 1 or edge[1] - edge[0] == -1:
-            a[edge] = 1
-        elif edge[1] - edge[0] == input_b or edge[1] - edge[0] == -input_b:
-            a[edge] = 0
-        else:
-            print("error")
-            sys.exit()
-    
-    return a
 
 
 def fix_block_area(q):
@@ -41,7 +29,6 @@ def input_data(input_a, input_b, input_m, input_total_amount):
     V_p = [i for i in range(input_a * input_b)]
     enter_block, exit_block = make_instance_tool.get_ramp_block(input_a, input_b)
     V = [i for i in V_p if i != enter_block and i != exit_block]
-    # q = [math.ceil(input_total_amount / (input_a * input_b -2)) for _ in range(input_a * input_b)]
     q = [(input_total_amount + MASTER.gap_area) / (input_a * input_b -2) for _ in range(input_a * input_b)]
     q[enter_block] = 0
     q[exit_block] = 1
@@ -66,10 +53,8 @@ def input_data(input_a, input_b, input_m, input_total_amount):
     # 枝
     E = make_instance_tool.generate_block(input_a, input_b)
     E_bar = [(j,i) for (i,j) in E]
-    
-    # 辺の方向
-    a = get_block_direction(E, input_b)
-    a_bar = get_block_direction(E_bar, input_b)
+    a = make_instance_tool.get_block_direction(E, input_b)
+    a_bar = make_instance_tool.get_block_direction(E_bar, input_b)
     
     return V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar
 
@@ -143,7 +128,7 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
     # （ペナルティ1）出る向きと入る向きを同じにする
     y = {(i) : model.addVar(vtype = gp.GRB.BINARY, name = f"y_{i}") for i in V}
     for i in V:
-        N_i = make_instance_tool.make_Next_block_list(i)
+        N_i = make_instance_tool.get_Next_block_list(i)
         model.addConstr(-y[i] <= gp.quicksum(a[j,i]*alpha[j,i] for j in N_i) - gp.quicksum(a_bar[i,j]*beta[i,j] for j in N_i), name=f"constr_l_{i}_{j}_{k}")
         model.addConstr(y[i] >= gp.quicksum(a[j,i]*alpha[j,i] for j in N_i) - gp.quicksum(a_bar[i,j]*beta[i,j] for j in N_i), name=f"constr_r_{i}_{j}_{k}")
     
@@ -167,7 +152,7 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
     # （ペナルティ5）隣接するブロックに配置する車種を同じにする
     z = {(i, j, k) : model.addVar(vtype = gp.GRB.BINARY, name = f"z_{i}_{j}_{k}") for i in V_p for j in V_p for k in M}
     for i in V:
-        N_i = make_instance_tool.make_Next_block_list(i)
+        N_i = make_instance_tool.get_Next_block_list(i)
         for j in N_i:
             for k in M:
                 model.addConstr(-z[i,j,k] <= x[i,k] - x[j,k], name=f"constr_l_{i}_{j}_{k}")
@@ -286,12 +271,17 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
 def main():
     begin_time = time.time()
     
-    input_a = MASTER.input_a
-    input_b = MASTER.input_b
-    input_m = MASTER.input_m
-    input_total_amount = MASTER.input_total_amount
+    if MASTER.USE_REAL_DATA == 0:
+        input_a = MASTER.input_a
+        input_b = MASTER.input_b
+        input_m = MASTER.input_m
+        input_total_amount = MASTER.input_total_amount
+        
+        V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar = input_data(input_a, input_b, input_m, input_total_amount)
+    else:
+        V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar = read_real_dataset.read_dataset()
     
-    V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar = input_data(input_a, input_b, input_m, input_total_amount)
+        
     sol, sola, solb, penalty_sol = solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar)
     
     if sol is not None:

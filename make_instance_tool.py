@@ -1,12 +1,12 @@
 import random
-import math
+import math, sys
 import MASTER
 
 random.seed(MASTER.random_seed)
 print("random seed: ", MASTER.random_seed)
 
 def get_ramp_block(a, b):
-    enter_block = math.floor(b/2)
+    enter_block = MASTER.ramp_block_to_down_floor
     exit_block = MASTER.ramp_block_to_upper_floor
 
     return enter_block, exit_block
@@ -90,6 +90,19 @@ def generate_block(a, b):
     
     return E
 
+def get_block_direction(EdgeList, input_b):
+    a = {(i,j): 0 for (i,j) in EdgeList}
+    
+    for edge in EdgeList:
+        if edge[1] - edge[0] == 1 or edge[1] - edge[0] == -1:
+            a[edge] = 1
+        elif edge[1] - edge[0] == input_b or edge[1] - edge[0] == -input_b:
+            a[edge] = 0
+        else:
+            print("error")
+            sys.exit()
+    
+    return a
 
 def set_hold():
     a, b = MASTER.input_a, MASTER.input_b
@@ -151,7 +164,7 @@ def get_detailed_sekiwari_results(M: list, p: list):
     return r
 
 
-def make_Next_block_list(i):
+def get_Next_block_list(i):
     a, b = MASTER.input_a, MASTER.input_b
     Next_block_list = []
     
@@ -197,7 +210,7 @@ def get_gang_preferences(M):
 
 
 def get_delta(i, E):
-    N_i = make_Next_block_list(i)
+    N_i = get_Next_block_list(i)
     for j in N_i:
         if (j, i) in E:
             continue

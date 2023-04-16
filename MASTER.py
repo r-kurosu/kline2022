@@ -1,10 +1,13 @@
+
+
 # input parameters
 input_a = 4
 input_b = 16
-input_m = 5 # 車の数
+input_m = 5 # 車種の数
 input_total_amount = 500 # 車の総面積 (各車種の面積はランダム)
 
 ramp_block_to_upper_floor = 56 # 上のデッキにいくブロックの番号 (0〜a*b-1)
+ramp_block_to_down_floor = 8
 
 # set port list
 input_port_num = 10 # 港の数
@@ -29,5 +32,7 @@ random_seed = 7 #1~100: fixed seed
 # choose model
 potential_flag = 1 #0: no potential, 1: with potential
 next_block_flag = 1 #0: no block, 1: with block
-
 limit_ramp_branch_model = 1 #0: no limit, 1: limit (入り口ランプに対する枝の方向を一つに固定)
+
+# choose data
+USE_REAL_DATA = 1 #0: dummy data, 1: real data
