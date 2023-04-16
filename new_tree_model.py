@@ -49,6 +49,9 @@ def input_data(input_a, input_b, input_m, input_total_amount):
     lp_dummy, dp_dummy = make_instance_tool.generate_dummy_car(port_list)
     o.append(lp_dummy)
     d.append(dp_dummy)
+    M_same, M_reverse, M_description = make_instance_tool.get_gang_preferences(M)
+    M_h_bar, Sekwiari_results = make_instance_tool.get_sekiwari_results(M)
+    r = make_instance_tool.get_detailed_sekiwari_results(M, p)
     
     # 枝
     E = make_instance_tool.generate_block(input_a, input_b)
@@ -56,10 +59,10 @@ def input_data(input_a, input_b, input_m, input_total_amount):
     a = make_instance_tool.get_block_direction(E, input_b)
     a_bar = make_instance_tool.get_block_direction(E_bar, input_b)
     
-    return V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar
+    return V, V_p, M, M_p, M_same, M_reverse, M_h_bar, r, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar
 
 
-def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar):
+def solve_tree_model(V, V_p, M, M_p, M_same, M_reverse, M_h_bar, r, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar):
     model = gp.Model('tree_model')
     
     # 変数定義
@@ -129,11 +132,10 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
     y = {(i) : model.addVar(vtype = gp.GRB.BINARY, name = f"y_{i}") for i in V}
     for i in V:
         N_i = make_instance_tool.get_Next_block_list(i)
-        model.addConstr(-y[i] <= gp.quicksum(a[j,i]*alpha[j,i] for j in N_i) - gp.quicksum(a_bar[i,j]*beta[i,j] for j in N_i), name=f"constr_l_{i}_{j}_{k}")
-        model.addConstr(y[i] >= gp.quicksum(a[j,i]*alpha[j,i] for j in N_i) - gp.quicksum(a_bar[i,j]*beta[i,j] for j in N_i), name=f"constr_r_{i}_{j}_{k}")
+        model.addConstr(-y[i] <= gp.quicksum(a[j,i]*alpha[j,i] for j in N_i) - gp.quicksum(a_bar[i,j]*beta[i,j] for j in N_i), name=f"constr_l_{i}")
+        model.addConstr(y[i] >= gp.quicksum(a[j,i]*alpha[j,i] for j in N_i) - gp.quicksum(a_bar[i,j]*beta[i,j] for j in N_i), name=f"constr_r_{i}")
     
     # （ペナルティ3) ギャングの好みを考慮する
-    M_same, M_reverse, M_description = make_instance_tool.get_gang_preferences(M)
     z3 = {(i) : model.addVar(vtype = gp.GRB.CONTINUOUS, name = f"z3_{i}") for i in V}
     for i in V:
         delta = make_instance_tool.get_delta(i, E)
@@ -146,8 +148,8 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
                 model.addConstr(beta[i,sigma]-alpha[j,i] <= 1 + z3[i] - gp.quicksum(x[i,k] for k in M_reverse), name=f"constr_p3_21_{i}_{j}")
             
     # （ペナルティ4）席割りの結果を考慮する
-    Hold_List = make_instance_tool.set_hold()
-    Penalty_Car_list, Sekiwari_Results = make_instance_tool.get_sekiwari_results(M)
+    # 目的関数のみ
+    
     
     # （ペナルティ5）隣接するブロックに配置する車種を同じにする
     z = {(i, j, k) : model.addVar(vtype = gp.GRB.BINARY, name = f"z_{i}_{j}_{k}") for i in V_p for j in V_p for k in M}
@@ -158,8 +160,8 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
                 model.addConstr(-z[i,j,k] <= x[i,k] - x[j,k], name=f"constr_l_{i}_{j}_{k}")
                 model.addConstr(z[i,j,k] >= x[i,k] - x[j,k], name=f"constr_r_{i}_{j}_{k}")
     
-    # # (ペナルティ6) 席割りの結果を考慮する（改良版）
-    r = make_instance_tool.get_detailed_sekiwari_results(M, p)
+    # (ペナルティ6) 席割りの結果を考慮する（改良版）
+    Hold_List = make_instance_tool.set_hold()
     y6 = {(h, k) : model.addVar(vtype = gp.GRB.CONTINUOUS, name = f"free_space_{h}_{k}") for h in range(4) for k in M}
     for h in range(4):
         for k in M:
@@ -183,7 +185,7 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
         + MASTER.w1*gp.quicksum(y[i] for i in V)
         + MASTER.w2*(gp.quicksum(1-a_bar[edge]*beta[edge] for edge in E_bar))
         + MASTER.w3*gp.quicksum(z3[i] for i in V)
-        + MASTER.w4*gp.quicksum(gp.quicksum(x[i,k] for i in Hold_List[h] for k in Penalty_Car_list[h]) for h in range(4))
+        + MASTER.w4*gp.quicksum(gp.quicksum(x[i,k] for i in Hold_List[h] for k in M_h_bar[h]) for h in range(4))
         + MASTER.w5*gp.quicksum(z[i,j,k] for i in V_p for j in V_p for k in M)
         + MASTER.w6*gp.quicksum(y6[h,k] for h in range(4) for k in M)
         + MASTER.w7*(gp.quicksum(t_a[edge] for edge in E) + gp.quicksum(t_b[edge] for edge in E_bar)),
@@ -213,7 +215,7 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
         print(f"total amount: {sum(p)}")
         print(f"total capacity: {sum(q)}")
         for k in M:
-            print(f"car {k}: LP: {o[k]}, DP: {d[k]}, area: {p[k]}, Hold: {Sekiwari_Results[k]}, gang_pref: {M_description[k]}")
+            print(f"car {k}: LP: {o[k]}, DP: {d[k]}, area: {p[k]}")
         print(f"dummy car: LP: {o[-1]}, DP: {d[-1]}")
         print(f"number of block: {len(V_p)}")
         print(f"capacity of a block: {q[0]}")
@@ -234,7 +236,7 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
             sum(y[i].X for i in V),
             sum(1-a_bar[edge]*beta[edge].X for edge in E_bar),
             sum(z3[i].X for i in V),
-            sum(sum(x[i,k].X for i in Hold_List[h] for k in Penalty_Car_list[h]) for h in range(4)),
+            sum(sum(x[i,k].X for i in Hold_List[h] for k in M_h_bar[h]) for h in range(4)),
             sum(z[i,j,k].X for i in V_p for j in V_p for k in M),
             sum(y6[h,k].X for h in range(4) for k in M),
             sum(t_a[edge].X for edge in E) + sum(t_b[edge].X for edge in E_bar)
@@ -260,7 +262,7 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
         print(f"total amount: {sum(p)}")
         print(f"total capacity: {sum(q)}")
         for k in M:
-            print(f"car {k}: LP: {o[k]}, DP: {d[k]}, area: {p[k]}")
+            print(f"car {k}: LP: {o[k]}, DP: {d[k]}, area(RT): {p[k]}")
         print(f"number of block: {len(V_p)}")
         print(f"capacity of a block: {q[0]}")
         return None, None, None, None
@@ -270,19 +272,45 @@ def solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_b
 
 def main():
     begin_time = time.time()
+    input_a = MASTER.input_a
+    input_b = MASTER.input_b
     
     if MASTER.USE_REAL_DATA == 0:
-        input_a = MASTER.input_a
-        input_b = MASTER.input_b
         input_m = MASTER.input_m
         input_total_amount = MASTER.input_total_amount
         
-        V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar = input_data(input_a, input_b, input_m, input_total_amount)
+        V, V_p, M, M_p, M_same, M_reverse, M_h_bar, r, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar = input_data(input_a, input_b, input_m, input_total_amount)
     else:
-        V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar = read_real_dataset.read_dataset()
+        V, V_p, M, M_p, M_same, M_reverse, M_h_bar, r, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar = read_real_dataset.read_dataset()
     
-        
-    sol, sola, solb, penalty_sol = solve_tree_model(V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar)
+    variables = {
+        'V': V,
+        'V_p': V_p,
+        'M': M,
+        'M_p': M_p,
+        'M_same': M_same,
+        'M_reverse': M_reverse,
+        'M_h_bar': M_h_bar,
+        'r': r,
+        'E': E,
+        'E_bar': E_bar,
+        'q': q,
+        'p': p,
+        'o': o,
+        'o_max': o_max,
+        'd': d,
+        'd_max': d_max,
+        'enter_block': enter_block,
+        'exit_block': exit_block,
+        'a': a,
+        'a_bar': a_bar,
+    }
+
+    for var_name, var_value in variables.items():
+        print(f"{var_name}: {var_value}")
+
+    
+    sol, sola, solb, penalty_sol = solve_tree_model(V, V_p, M, M_p, M_same, M_reverse, M_h_bar, r, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar)
     
     if sol is not None:
         new_visualize_tool.visualize_solution(sol, sola, solb, penalty_sol, input_a, input_b, len(M), o, d, p)

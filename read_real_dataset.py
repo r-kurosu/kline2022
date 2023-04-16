@@ -29,13 +29,18 @@ def input_data(df, input_a, input_b, input_m, input_total_amount):
     M = [i for i in range(input_m)]
     M_p = [i for i in range(input_m + 1)]
     o, d = get_port_list(df, input_m)
-    p = [df['車種番号'][i] for i in range(input_m)]
+    p = [df[df['車種番号'] == k]['面積'].sum() for k in range(input_m)]
     o_max = max(o)
     d_max = max(d)
     lp_dummy = df['上の階層に行く車種積み地の最大値'].max()
-    dp_dummy = df['上の階層に行く車種上げ地の最小値']
+    dp_dummy = df['上の階層に行く車種上げ地の最小値'].max() + df['積み地'].max()
     o.append(lp_dummy)
     d.append(dp_dummy)
+    M_same = df[df['ギャングの好み'] == 1]['車種番号'].unique()
+    M_reverse = df[df['ギャングの好み'] == -1]['車種番号'].unique()
+    r = get_hold_amount_for_each_car(df, input_m)
+    M_h = [df[df['ホールド'] == h+1]['車種番号'].unique().tolist() for h in range(4)]
+    M_h_bar = [[x for x in M if x not in M_h[h]] for h in range(4)]
     
     #枝について
     E = make_instance_tool.generate_block(input_a, input_b)
@@ -43,7 +48,7 @@ def input_data(df, input_a, input_b, input_m, input_total_amount):
     a = make_instance_tool.get_block_direction(E, input_b)
     a_bar = make_instance_tool.get_block_direction(E_bar, input_b)
     
-    return V, V_p, M, M_p, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar
+    return V, V_p, M, M_p, M_same, M_reverse, M_h_bar, r, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar
 
 
 def fix_block_area(q, a, b):
@@ -67,6 +72,17 @@ def get_port_list(df, input_m):
     
     return o, d
 
+def get_hold_amount_for_each_car(df, input_m):
+    r = [[0 for i in range(4)] for j in range(input_m)]
+    for k in range(input_m):
+        for h in range(4):
+            try:
+                # 車種番号がkで，ホールドがhの時の面積を取得
+                r[k][h] = df[(df['車種番号'] == k) & (df['ホールド'] == h+1)]['面積'].values[0]
+            except:
+                r[k][h] = 0
+    return r
 
 if __name__ == '__main__':
-    read_dataset()
+    V, V_p, M, M_p, M_same, M_reverse, M_h_bar, r, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar = read_dataset()
+    print(M_h_bar, type(M_h_bar[0]))
