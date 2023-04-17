@@ -1,6 +1,6 @@
 # choose data
-USE_REAL_DATA = 1 #0: dummy data, 1: real data
-input_DK = 11
+USE_REAL_DATA = True # False: dummy data, True: real data
+input_DK = 7
 input_property = "BRA" # {BRA, CHN, IND, JPN, KOR, MEX, PHL, THA, USA}
 
 
@@ -17,7 +17,7 @@ ramp_block_to_down_floor = 8
 input_port_num = 10 # 港の数
 PORT_list = [i for i in range(input_port_num)]
 
-gap_area = 100 # ブロック容量に対するギャップ面積（0は車の総面積＝ブロックの総キャパシティ）
+gap_area = 100000 # ブロック容量に対するギャップ面積（0は車の総面積＝ブロックの総キャパシティ）
 
 TIME_LIMIT = 60
 

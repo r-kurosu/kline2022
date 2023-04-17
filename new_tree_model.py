@@ -215,7 +215,7 @@ def solve_tree_model(V, V_p, M, M_p, M_same, M_reverse, M_h_bar, r, E, E_bar, q,
         print(f"total amount: {sum(p)}")
         print(f"total capacity: {sum(q)}")
         for k in M:
-            print(f"car {k}: LP: {o[k]}, DP: {d[k]}, area: {p[k]}")
+            print(f"car {k}: LP: {o[k]}, DP: {d[k]}, RT: {p[k]}")
         print(f"dummy car: LP: {o[-1]}, DP: {d[-1]}")
         print(f"number of block: {len(V_p)}")
         print(f"capacity of a block: {q[0]}")
@@ -242,7 +242,7 @@ def solve_tree_model(V, V_p, M, M_p, M_same, M_reverse, M_h_bar, r, E, E_bar, q,
             sum(t_a[edge].X for edge in E) + sum(t_b[edge].X for edge in E_bar)
         ]
         for i in range(len(penalty_sol)):
-            print(f"penalty {i}: {penalty_sol[i]}")
+            print(f"penalty {i+1}: {penalty_sol[i]}")
         print("--------------------------------------")
         
         # (ブロック: 車種)

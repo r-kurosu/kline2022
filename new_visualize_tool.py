@@ -217,7 +217,7 @@ def visualize_solution(sol, sola, solb, penalty_sol, a, b, m, LP_list, DP_list, 
     # 結果の保存
     now_time = datetime.datetime.now()
     now_time_str = now_time.strftime("%Y%m%d_%H%M%S")
-    wb.save(f"results/results_{now_time_str}.xlsx")
+    wb.save(f"results/{MASTER.input_property}_{MASTER.input_DK}dk_{now_time_str}.xlsx")
     
     return
 

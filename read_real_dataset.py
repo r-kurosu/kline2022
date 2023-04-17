@@ -14,8 +14,8 @@ def read_dataset():
     input_a = MASTER.input_a
     input_b = MASTER.input_b
     
-    input_m = df['車種番号'].max()
-    input_total_amount = df['面積'].sum()
+    input_m = df['車種番号'].max() + 1
+    input_total_amount = df['合計RT'].sum()
     
     return input_data(df, input_a, input_b, input_m, input_total_amount)
 
@@ -34,7 +34,7 @@ def input_data(df, input_a, input_b, input_m, input_total_amount):
     M = [i for i in range(input_m)]
     M_p = [i for i in range(input_m + 1)]
     o, d = get_port_list(df, input_m)
-    p = [df[df['車種番号'] == k]['面積'].sum() for k in range(input_m)]
+    p = [df[df['車種番号'] == k]['合計RT'].sum() for k in range(input_m)]
     o_max = max(o)
     d_max = max(d)
     lp_dummy = df['上の階層に行く車種積み地の最大値'].max()
@@ -83,7 +83,7 @@ def get_hold_amount_for_each_car(df, input_m):
         for h in range(4):
             try:
                 # 車種番号がkで，ホールドがhの時の面積を取得
-                r[k][h] = df[(df['車種番号'] == k) & (df['ホールド'] == h+1)]['面積'].values[0]
+                r[k][h] = df[(df['車種番号'] == k) & (df['ホールド'] == h+1)]['合計RT'].values[0]
             except:
                 r[k][h] = 0
     return r
