@@ -2,7 +2,7 @@ import gurobipy as gp
 import sys
 import random, math, time
 import make_instance_tool
-import new_visualize_tool
+import visualize_tool
 import read_real_dataset
 import MASTER
 
@@ -313,7 +313,7 @@ def main():
     sol, sola, solb, penalty_sol = solve_tree_model(V, V_p, M, M_p, M_same, M_reverse, M_h_bar, r, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar)
     
     if sol is not None:
-        new_visualize_tool.visualize_solution(sol, sola, solb, penalty_sol, input_a, input_b, len(M), o, d, p)
+        visualize_tool.visualize_solution(sol, sola, solb, penalty_sol, input_a, input_b, len(M), o, d, p)
     end_time = time.time()
     print(f"calculation time: {end_time - begin_time} sec")
     

@@ -1,7 +1,7 @@
 import generate_sample
 import archive.visualize_sol as visualize_sol
-import test
-import flow
+import archive.test as test
+import archive.flow as flow
 
 # input parameters !!!
 a = 4 # input row of block
