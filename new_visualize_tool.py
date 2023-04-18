@@ -22,8 +22,9 @@ pink_gold_fill = excel.styles.PatternFill(patternType='solid', fgColor='FFD700')
 wine_red_fill = excel.styles.PatternFill(patternType='solid', fgColor='800000')
 marine_blue_fill = excel.styles.PatternFill(patternType='solid', fgColor='000080')
 passion_pink_fill = excel.styles.PatternFill(patternType='solid', fgColor='FF1493')
+gold_fill = excel.styles.PatternFill(patternType='solid', fgColor='FFD700')
 
-color_list = [yellow_fill, red_fill, blue_fill, green_fill, pink_fill, skyblue_fill, rime_fill, gray_fill, purple_fill, orange_fill, yellow_green_fill, pink_gold_fill, wine_red_fill, marine_blue_fill, passion_pink_fill]
+color_list = [yellow_green_fill, red_fill, marine_blue_fill, pink_fill, blue_fill, gold_fill, green_fill, skyblue_fill, rime_fill, gray_fill, purple_fill, orange_fill, yellow_fill, pink_gold_fill, wine_red_fill, passion_pink_fill]
 
 block_border = Border(top=Side(style='thin', color='000000'), 
                 bottom=Side(style='thin', color='000000'), 
@@ -217,7 +218,7 @@ def visualize_solution(sol, sola, solb, penalty_sol, a, b, m, LP_list, DP_list, 
     # 結果の保存
     now_time = datetime.datetime.now()
     now_time_str = now_time.strftime("%Y%m%d_%H%M%S")
-    wb.save(f"results/{MASTER.input_property}_{MASTER.input_DK}dk_{now_time_str}.xlsx")
+    wb.save(f"results/{now_time_str}_{MASTER.input_property}_{MASTER.input_DK}dk.xlsx")
     
     return
 

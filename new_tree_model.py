@@ -306,8 +306,8 @@ def main():
         'a_bar': a_bar,
     }
 
-    for var_name, var_value in variables.items():
-        print(f"{var_name}: {var_value}")
+    # for var_name, var_value in variables.items():
+    #     print(f"{var_name}: {var_value}")
 
     
     sol, sola, solb, penalty_sol = solve_tree_model(V, V_p, M, M_p, M_same, M_reverse, M_h_bar, r, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar)
