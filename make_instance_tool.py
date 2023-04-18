@@ -91,16 +91,58 @@ def generate_block(a, b):
         if edge[0] == exit_block:
             E = [e for e in E if e != edge]
     
-    ## 出入口からの枝を1方向に限定（右のみ）
+    ## 出入口からの枝を1方向に限定（右のみ） #TODO: dkごとに直す必要がある
     if MASTER.limit_ramp_branch_model == 1:
-        for edge in E:
-            if edge[0] == enter_block:
-                if edge[1] != enter_block + 1:
-                    E = [e for e in E if e != edge]
-            elif edge[1] == exit_block:
-                if edge[0] != exit_block - 1:
-                    E = [e for e in E if e != edge]
-    
+        if MASTER.USE_REAL_DATA == False:
+            for edge in E:
+                if edge[0] == enter_block:
+                    if edge[1] != enter_block + 1:
+                        E = [e for e in E if e != edge]
+                elif edge[1] == exit_block:
+                    if edge[0] != exit_block - 1:
+                        E = [e for e in E if e != edge]
+        else:
+            if MASTER.input_DK == 11:
+                for edge in E:
+                    if edge[0] == enter_block:
+                        if edge[1] != enter_block + 1:
+                            E = [e for e in E if e != edge]
+                    elif edge[1] == exit_block:
+                        if edge[0] != exit_block - 1:
+                            E = [e for e in E if e != edge]
+            elif MASTER.input_DK == 10:
+                for edge in E:
+                    if edge[0] == enter_block:
+                        if edge[1] != enter_block - 1:
+                            E = [e for e in E if e != edge]
+                    elif edge[1] == exit_block:
+                        if edge[0] != exit_block - 1:
+                            E = [e for e in E if e != edge]
+            elif MASTER.input_DK == 9:
+                for edge in E:
+                    if edge[0] == enter_block:
+                        if edge[1] != enter_block - 1:
+                            E = [e for e in E if e != edge]
+                    elif edge[1] == exit_block:
+                        if edge[0] != exit_block + 1:
+                            E = [e for e in E if e != edge]
+            elif MASTER.input_DK == 8:
+                for edge in E:
+                    if edge[0] == enter_block:
+                        if edge[1] != enter_block + 1:
+                            E = [e for e in E if e != edge]
+                    elif edge[1] == exit_block:
+                        if edge[0] != exit_block + 1:
+                            E = [e for e in E if e != edge]
+            elif MASTER.input_DK == 7:
+                for edge in E:
+                    if edge[0] == enter_block:
+                        if edge[1] != enter_block + 1:
+                            E = [e for e in E if e != edge]
+                    elif edge[1] == exit_block:
+                        if edge[0] != exit_block + 1:
+                            E = [e for e in E if e != edge]
+                            
     return E
 
 def get_block_direction(EdgeList, input_b):
@@ -127,13 +169,13 @@ def set_hold():
             continue
         temp = i % b
         if temp <= round(b/4):
-            H1.append(i)
-        elif temp <= round(b/2):
-            H2.append(i)
-        elif temp <= round(b*3/4):
-            H3.append(i)
-        else:
             H4.append(i)
+        elif temp <= round(b/2):
+            H3.append(i)
+        elif temp <= round(b*3/4):
+            H2.append(i)
+        else:
+            H1.append(i)
     
     Hold_List = [H1, H2, H3, H4]
     
