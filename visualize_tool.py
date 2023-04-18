@@ -23,8 +23,9 @@ wine_red_fill = excel.styles.PatternFill(patternType='solid', fgColor='800000')
 marine_blue_fill = excel.styles.PatternFill(patternType='solid', fgColor='000080')
 passion_pink_fill = excel.styles.PatternFill(patternType='solid', fgColor='FF1493')
 gold_fill = excel.styles.PatternFill(patternType='solid', fgColor='FFD700')
+blue_white_fill = excel.styles.PatternFill(patternType='solid', fgColor='ADD8E6')
 
-color_list = [yellow_green_fill, red_fill, marine_blue_fill, pink_fill, blue_fill, gold_fill, green_fill, skyblue_fill, rime_fill, gray_fill, purple_fill, orange_fill, yellow_fill, pink_gold_fill, wine_red_fill, passion_pink_fill]
+color_list = [yellow_green_fill, red_fill, blue_white_fill, pink_fill, blue_fill, gold_fill, green_fill, skyblue_fill, rime_fill, gray_fill, purple_fill, orange_fill, yellow_fill, pink_gold_fill, wine_red_fill, passion_pink_fill]
 
 block_border = Border(top=Side(style='thin', color='000000'), 
                 bottom=Side(style='thin', color='000000'), 
@@ -68,6 +69,7 @@ def paint_cell(a, b, sol, ws, m):
 def point_enter_cell(a, b, in_out_flag, ws):
     enter_block, exit_block = make_instance_tool.get_ramp_block(a, b)
     ws.cell(row=2*(enter_block//b)+1, column=2*(enter_block%b)+1).border = ramp_border
+    ws.cell(row=2*(exit_block//b)+1, column=2*(exit_block%b)+1).border = ramp_border
     
     return ws
 

@@ -1,7 +1,7 @@
 # choose data
 USE_REAL_DATA = True # False: dummy data, True: real data
 input_DK = 10
-input_property = "BRA" # {BRA, CHN, IND, JPN, KOR, MEX, PHL, THA, USA}
+input_property = "HAM" # {BRA, HAM, AME}
 
 
 # input parameters

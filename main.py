@@ -7,7 +7,6 @@ import read_real_dataset
 import MASTER
 
 
-
 def fix_block_area(q):
     a, b = MASTER.input_a, MASTER.input_b
     

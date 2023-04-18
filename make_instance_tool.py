@@ -5,9 +5,22 @@ import MASTER
 random.seed(MASTER.random_seed)
 print("random seed: ", MASTER.random_seed)
 
+ramp_list = {
+    # dk: [enter, exit]
+    11: [6, 8],
+    10: [38, 6],
+    9: [42, 38],
+    8: [58, 42],
+    7: [10, 58]
+}
+
 def get_ramp_block(a, b):
-    enter_block = MASTER.ramp_block_to_down_floor
-    exit_block = MASTER.ramp_block_to_upper_floor
+    if MASTER.USE_REAL_DATA == True:
+        enter_block = ramp_list[MASTER.input_DK][0]
+        exit_block = ramp_list[MASTER.input_DK][1]
+    else:
+        enter_block = MASTER.ramp_block_to_down_floor
+        exit_block = MASTER.ramp_block_to_upper_floor
 
     return enter_block, exit_block
 
