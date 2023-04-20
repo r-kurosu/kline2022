@@ -5,7 +5,7 @@ import make_instance_tool
 
 def read_dataset():
     try:
-        df = pd.read_csv(f'datasets/{MASTER.input_property}_{MASTER.input_DK}dk.csv', sep=',')
+        df = pd.read_csv(f'datasets/{MASTER.input_property}_6-11dk/{MASTER.input_property}_{MASTER.input_DK}dk.csv', sep=',')
     except FileNotFoundError:
         print('FileNotFoundError: Please check the file name or input dk.')
         exit()
