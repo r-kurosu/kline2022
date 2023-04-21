@@ -149,7 +149,6 @@ def solve_tree_model(V, V_p, M, M_p, M_same, M_reverse, M_h_bar, r, E, E_bar, q,
     # （ペナルティ4）席割りの結果を考慮する
     # 目的関数のみ
     
-    
     # （ペナルティ5）隣接するブロックに配置する車種を同じにする
     z = {(i, j, k) : model.addVar(vtype = gp.GRB.BINARY, name = f"z_{i}_{j}_{k}") for i in V_p for j in V_p for k in M}
     for i in V:
@@ -312,7 +311,7 @@ def main():
     sol, sola, solb, penalty_sol = solve_tree_model(V, V_p, M, M_p, M_same, M_reverse, M_h_bar, r, E, E_bar, q, p, o, o_max, d, d_max, enter_block, exit_block, a, a_bar)
     
     if sol is not None:
-        visualize_tool.visualize_solution(sol, sola, solb, penalty_sol, input_a, input_b, len(M), o, d, p)
+        visualize_tool.visualize_solution(sol, sola, solb, penalty_sol, input_a, input_b, len(M), o, d, p, M_h_bar)
     end_time = time.time()
     print(f"calculation time: {end_time - begin_time} sec")
     

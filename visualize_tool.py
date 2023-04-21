@@ -133,21 +133,28 @@ def print_edge_out(a, b, solb, ws):
     return
 
 
-def add_annotation(ws, a, b, m, LP_list, DP_list, Amount_list):
+def add_annotation(ws, a, b, m, LP_list, DP_list, Amount_list, M_h_bar):
+    Hold_list = [x for x in M_h_bar if x not in [0, 1, 2, 3]]
+        
     ws.cell(row=1, column=2*b+1).value = f"car"
     ws.cell(row=1, column=2*b+1).alignment = center_alignment
     ws.cell(row=1, column=2*b+2).value = f"LP → DP"
     ws.cell(row=1, column=2*b+2).alignment = center_alignment
     ws.cell(row=1, column=2*b+3).value = f"car amount (RT)"
     ws.cell(row=1, column=2*b+3).alignment = center_alignment
+    ws.cell(row=1, column=2*b+4).value = f"hold"
+    ws.cell(row=1, column=2*b+4).alignment = center_alignment
     
     for i in range(m):
-        ws.cell(row=i+2, column=2*b+1).value = f"car {i}"
         ws.cell(row=i+2, column=2*b+1).fill = color_list[i]
+        ws.cell(row=i+2, column=2*b+1).value = f"car {i}"
         ws.cell(row=i+2, column=2*b+1).alignment = center_alignment
         ws.cell(row=i+2, column=2*b+2).value = f"{LP_list[i]} → {DP_list[i]}"
         ws.cell(row=i+2, column=2*b+2).alignment = center_alignment
-        ws.cell(row=i+2, column=2*b+3).value = f"{Amount_list[i]} (RT)"
+        ws.cell(row=i+2, column=2*b+3).value = f"{Amount_list[i]}"
+        ws.cell(row=i+2, column=2*b+3).alignment = center_alignment
+        ws.cell(row=i+2, column=2*b+4).value = f"{Hold_list[i]}"
+        ws.cell(row=i+2, column=2*b+4).alignment = center_alignment
     
     # dummy car
     if m >= len(color_list):
@@ -191,7 +198,7 @@ def output_solution_info(ws, penalty_sol):
     return
 
 
-def visualize_solution(sol, sola, solb, penalty_sol, a, b, m, LP_list, DP_list, Amount_list):
+def visualize_solution(sol, sola, solb, penalty_sol, a, b, m, LP_list, DP_list, Amount_list, M_h_bar):
     wb = excel.Workbook()
     
     # 積み込み時の情報
@@ -199,7 +206,7 @@ def visualize_solution(sol, sola, solb, penalty_sol, a, b, m, LP_list, DP_list, 
     ws.title = "積み込み"
     ws = paint_cell(a, b, sol, ws, m)
     print_edge_in(a, b, sola, ws)
-    add_annotation(ws, a, b, m, LP_list, DP_list, Amount_list)
+    add_annotation(ws, a, b, m, LP_list, DP_list, Amount_list, M_h_bar)
     point_enter_cell(a,b,"in",ws)
     fit_cell_size(ws, a, b)
     
@@ -208,7 +215,7 @@ def visualize_solution(sol, sola, solb, penalty_sol, a, b, m, LP_list, DP_list, 
     ws = wb["搬出"]
     ws = paint_cell(a, b, sol, ws, m)
     print_edge_out(a, b, solb, ws)
-    add_annotation(ws, a, b, m, LP_list, DP_list, Amount_list)
+    add_annotation(ws, a, b, m, LP_list, DP_list, Amount_list, M_h_bar)
     point_enter_cell(a,b,"out",ws)
     fit_cell_size(ws, a, b)
     
