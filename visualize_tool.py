@@ -24,8 +24,23 @@ marine_blue_fill = excel.styles.PatternFill(patternType='solid', fgColor='000080
 passion_pink_fill = excel.styles.PatternFill(patternType='solid', fgColor='FF1493')
 gold_fill = excel.styles.PatternFill(patternType='solid', fgColor='FFD700')
 blue_white_fill = excel.styles.PatternFill(patternType='solid', fgColor='ADD8E6')
+brawn_fill = excel.styles.PatternFill(patternType='solid', fgColor='A52A2A')
 
 color_list = [yellow_green_fill, red_fill, blue_white_fill, pink_fill, blue_fill, gold_fill, green_fill, skyblue_fill, rime_fill, gray_fill, purple_fill, orange_fill, yellow_fill, pink_gold_fill, wine_red_fill, passion_pink_fill]
+
+# HAM 7dk (LP/DP)
+# color_list = [pink_fill, pink_fill, blue_white_fill]
+# color_list = [brawn_fill, red_fill, blue_white_fill]
+# HAM 9dk (LP/DP)
+# color_list = [pink_fill, pink_fill, blue_white_fill]
+# color_list = [brawn_fill, red_fill, blue_white_fill]
+# # HAM 10dk (LP/DP)
+# color_list = [yellow_green_fill, pink_fill, pink_fill, red_fill, blue_white_fill, blue_white_fill, skyblue_fill]
+# color_list = [red_fill, red_fill, brawn_fill, red_fill, red_fill, blue_white_fill, skyblue_fill]
+# # HAM 11dk (LP/DP)
+# color_list = [yellow_green_fill, pink_fill, pink_fill, pink_fill, yellow_green_fill, pink_fill, pink_fill, yellow_green_fill, blue_white_fill]
+# color_list = [gold_fill, green_fill, red_fill, blue_white_fill, blue_white_fill, brawn_fill, orange_fill, pink_fill, blue_white_fill, skyblue_fill]
+
 
 block_border = Border(top=Side(style='thin', color='000000'), 
                 bottom=Side(style='thin', color='000000'), 
@@ -57,11 +72,11 @@ def paint_cell(a, b, sol, ws, m):
                 ws.cell(row=2*i+1, column=2*j+1).fill = color_list[sol[i*b+j]]
     
     # dummy car
-    try:
-        ws.cell(row=2*(exit_block//b)+1, column=2*(exit_block%b)+1).fill = color_list[m]
-    except:
-        print("車種が多すぎます. カラーを追加してください")
-        return ws
+    # try:
+    #     ws.cell(row=2*(exit_block//b)+1, column=2*(exit_block%b)+1).fill = color_list[m]
+    # except:
+    #     print("車種が多すぎます. カラーを追加してください")
+    #     return ws
     
     return ws
 
