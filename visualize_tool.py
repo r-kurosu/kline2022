@@ -153,8 +153,8 @@ def add_annotation(ws, a, b, m, LP_list, DP_list, Amount_list, M_h_bar):
         ws.cell(row=i+2, column=2*b+2).alignment = center_alignment
         ws.cell(row=i+2, column=2*b+3).value = f"{Amount_list[i]}"
         ws.cell(row=i+2, column=2*b+3).alignment = center_alignment
-        ws.cell(row=i+2, column=2*b+4).value = f"{Hold_list[i]}"
-        ws.cell(row=i+2, column=2*b+4).alignment = center_alignment
+        # ws.cell(row=i+2, column=2*b+4).value = f"{Hold_list[i]}"
+        # ws.cell(row=i+2, column=2*b+4).alignment = center_alignment
     
     # dummy car
     if m >= len(color_list):

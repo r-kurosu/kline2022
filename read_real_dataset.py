@@ -34,6 +34,8 @@ def input_data(df, input_a, input_b, input_m, input_total_amount):
     M = [i for i in range(input_m)]
     M_p = [i for i in range(input_m + 1)]
     o, d = get_port_list(df, input_m)
+    print(f"o: {o}")
+    print(f"d: {d}")
     p = [df[df['車種番号'] == k]['合計RT'].sum() for k in range(input_m)]
     o_max = max(o)
     d_max = max(d)
@@ -72,8 +74,17 @@ def fix_block_area(q, a, b):
 def get_port_list(df, input_m):
     LP_max = df['積み地'].max()
     LP_max = max(LP_max, df['上の階層に行く車種積み地の最大値'].max())
-    o = [df['積み地'][i] for i in range(input_m)]
-    d = [df['揚げ地'][i] + LP_max for i in range(input_m)]
+    
+    o = []
+    d = []
+    for car_id in range(input_m):
+        for i in range(len(df)):
+            if df.iloc[i]['車種番号'] == car_id:
+                o.append(int(df.iloc[i]['積み地']))
+                d.append(int(df.iloc[i]['揚げ地'] + LP_max))
+                break
+    print(o)
+    print(d)
     
     return o, d
 

@@ -19,7 +19,7 @@ PORT_list = [i for i in range(input_port_num)]
 
 gap_area = 100000 # ブロック容量に対するギャップ面積（0は車の総面積＝ブロックの総キャパシティ）
 
-TIME_LIMIT = 60
+TIME_LIMIT = 300
 
 # set weight (0はペナルティなし)
 w1 = 1 # 各ブロックに入る向きと出る向きに関するペナルティ
